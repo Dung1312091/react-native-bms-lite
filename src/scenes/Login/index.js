@@ -1,7 +1,8 @@
 // eslint-disable-line require
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import AnimatedHideView from "react-native-animated-hide-view";
+// import Spinner from "react-native-spinkit";
+import Loading from "../../components/Loading";
 import { connect } from "react-redux";
 import {
   StyleSheet,
@@ -122,20 +123,17 @@ class Login extends Component {
     }
   }
   render() {
-    var { username, password, loginFail, isLoading } = this.state;
-    var loginErr = loginFail ? (
+    let { username, password, loginFail, isLoading } = this.state;
+    let loginErr = loginFail ? (
       <Text style={{ color: "red" }}>
         Tài khoản chỉ gồm các ký tự 0-9, aA-zZ
       </Text>
     ) : null;
+    let animateLoading = isLoading ? <Loading color="#ffffff" /> : null;
     return (
       <Container>
-        {/* <View style={[styles.isLoading, isLoading ? '' : styles.opancityLoading]}>
-                    <Spinner color='blue' />
-                </View> */}
-        <View
-          style={[styles.container, !isLoading ? "" : styles.opancityLoading]}
-        >
+        <View style={styles.container}>
+          {animateLoading}
           <View style={styles.logoCompany}>
             <Image
               style={{ width: 263, height: 59 }}
@@ -150,7 +148,7 @@ class Login extends Component {
           >
             {loginErr}
           </View>
-          <AnimatedHideView visible={true}>
+          <View>
             <View style={styles.SectionStyle}>
               <View style={styles.inputLogin}>
                 <Image
@@ -191,7 +189,7 @@ class Login extends Component {
               </TouchableOpacity>
             </View>
             {/* {loading} */}
-          </AnimatedHideView>
+          </View>
         </View>
       </Container>
     );

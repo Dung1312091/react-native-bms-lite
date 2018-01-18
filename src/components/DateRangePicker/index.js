@@ -107,7 +107,7 @@ class DateRangePicker extends Component {
     let trip = JSON.parse(get_trip);
     let fromDate = moment(date).format("YYYY-MM-DD");
     let toDate = this.converDate(fromDate, 3);
-    let routeId = this.props.changeRouteReducers;
+    let routeId = this.props.changeRouteReducers.route_id;
     let params = {
       access_token: token,
       company_id: user.data.CompId,

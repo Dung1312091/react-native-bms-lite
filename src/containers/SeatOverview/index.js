@@ -6,6 +6,7 @@ import ActionSheet from "react-native-actionsheet";
 import { connect } from "react-redux";
 import moment from "moment";
 import { getConfigurationOverview } from "../../actions/configurationOverview";
+import Loading from "../../components/Loading";
 class SeatOverview extends Component {
   constructor(props) {
     super(props);
@@ -52,6 +53,7 @@ class SeatOverview extends Component {
     };
     this.props.getConfigurationOverview(params);
   }
+
   onPress = () => {
     // console.log(item);
     this.setState(previousState => {
@@ -217,16 +219,18 @@ class SeatOverview extends Component {
   //   console.warn('ref==>',ref);
   // }
   render() {
+    console.log("nhin", this.props.configurationOverviewReducers);
     let data = [];
     let response = this.props.configurationOverviewReducers;
+
     var dates = moment(this.props.dayReducers, "DD-MM-YYYY").format(
       "YYYY-MM-DD"
     );
     let tomorrowDate = this.converDate(dates, 2);
     let nextTomorrowDate = this.converDate(dates, 3);
     let ListDates = [dates, tomorrowDate, nextTomorrowDate];
-    if (Object.keys(response).length > 0) {
-      let trip_overview = response.data.trip_overview.dates;
+    if (Object.keys(response).length > 0 && response.data) {
+      let trip_overview = response.data.data.trip_overview.dates;
       if (trip_overview.length < 3 && trip_overview.length > 0) {
         for (let i = 0; i < ListDates.length; i++) {
           let count = 0;
@@ -272,6 +276,9 @@ class SeatOverview extends Component {
     } = styles;
     return (
       <View style={containerStyle}>
+        {this.props.configurationOverviewReducers.isLoading ? (
+          <Loading color="#ffffff" />
+        ) : null}
         <Grid style={tableStyle}>
           {dates ? (
             <Col style={columnHeader}>

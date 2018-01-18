@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import { Actions } from "react-native-router-flux";
 import { StyleSheet, View, Image } from "react-native";
-import { Spinner } from "native-base";
+import Spinner from "react-native-spinkit";
 import { Authentication } from "./Login/action";
-// import { deleteToken } from "../utils/AsyncStorage";
-// const ACCESS_TOKEN = "access_token";
+import { deleteToken } from "../utils/AsyncStorage";
+const ACCESS_TOKEN = "access_token";
 const styles = StyleSheet.create({
   container: {
     backgroundColor: "#0B65B0",
@@ -50,7 +50,9 @@ class RunAppScene extends Component {
             source={require("../images/logo.png")}
           />
         </View>
-        <Spinner color="red" />
+        <View style={{ alignItems: "center" }}>
+          <Spinner isVisible={true} type="Circle" color="#FFFFFF" />
+        </View>
       </View>
     );
   }
