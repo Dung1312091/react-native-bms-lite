@@ -35,17 +35,62 @@ class DropdownTrip extends Component {
       to_date: toDate,
       groups: "selling_configs,fare_configs,statistic"
     };
-    this.props.changeRouteId(value[0]);
+    // try {
+    //   AsyncStorage.setItem(ROUTE, JSON.stringify(value)).then(() => {
+    //     this.props.changeRouteId(value[0], value);
+    //     this.props.getConfigurationOverview(params);
+    //   });
+    // } catch (error) {
+    //   // Error saving data
+    // }
+    this.props.changeRouteId(value[0], value);
     this.props.getConfigurationOverview(params);
   };
+  // isItemInArray = (array, item) => {
+  //   for (var i = 0; i < array.length; i++) {
+  //     // This if statement depends on the format of your array
+  //     if (array[i][0] == item[0] && array[i][1] == item[1]) {
+  //       return i; // Found it
+  //     }
+  //   }
+  //   return -1; // Not found
+  // };
   componentWillMount() {
     let get_trip = this.props.loginReducers.trip._bodyInit;
-    let trip = JSON.parse(get_trip);
-    this.setState({
-      data: trip.data,
-      defaultIndex: 1,
-      defaultValue: trip.data[0]
+    let data = JSON.parse(get_trip);
+    let trip = data.data.filter(item => {
+      return item[1] === 1;
     });
+    this.setState({
+      data: trip,
+      defaultIndex: 1,
+      defaultValue: trip[0]
+    });
+    this.props.changeRouteId(1, trip[0]);
+    // try {
+    //   AsyncStorage.getItem(ROUTE).then(value => {
+    //     if (value) {
+    //       let data = JSON.parse(value);
+    //       let index = this.isItemInArray(trip.data, data);
+    //       this.setState({
+    //         data: trip.data,
+    //         defaultIndex: +index + 1,
+    //         defaultValue: data
+    //       });
+    //       this.props.changeRouteId(index, data);
+    //     } else {
+    //       this.setState({
+    //         data: trip.data,
+    //         defaultIndex: 1,
+    //         defaultValue: trip.data[0]
+    //       });
+    //       this.props.changeRouteId(1, trip.data[0]);
+    //     }
+    //   });
+    // } catch (error) {
+    //   // Error saving data
+    // }
+    // // console.warn(trip.data[0]);
   }
   render() {
     const { data, defaultIndex, defaultValue } = this.state;
@@ -76,8 +121,8 @@ const mapDispatchToProps = dispatch => {
     getConfigurationOverview: params => {
       dispatch(getConfigurationOverview(params));
     },
-    changeRouteId: route_id => {
-      dispatch(changeRouteId(route_id));
+    changeRouteId: (route_id, value) => {
+      dispatch(changeRouteId(route_id, value));
     }
   };
 };

@@ -2,6 +2,8 @@ export const LOGIN = "LOGIN";
 export const LOGIN_SUCCESS = "LOGIN_SUCCESS";
 export const LOGIN_FAIL = "FAIL";
 export const GET_DAY = "GET_DAY";
+export const GET_DAY_SUCCESS = "GET_DAY_SUCCESS";
+export const GET_DAY_FAIL = "GET_DAY_FAIL";
 export const SELECT_DAY = "SELECT_DAY";
 export const NEXT_DAY = "NEXT_DAY";
 export const GET_TRIPS = "GET_TRIPS";
@@ -16,3 +18,4 @@ export const GET_CONFIGURATION_OVWERVIEW_FAIL =
   "GET_CONFIGURATION_OVWERVIEW_FAIL";
 export const GET_CONFIGURATION_OVWERVIEW = "GET_CONFIGURATION_OVWERVIEW";
 export const CHANGE_ROUTE_ID = "CHANGE_ROUTE_ID";
+

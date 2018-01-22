@@ -4,7 +4,9 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "android-linux":
+      "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
   },
   "dependencies": {
     "eslint": "^4.15.0",
@@ -16,6 +18,7 @@
     "react-native-actionsheet": "^2.3.0",
     "react-native-animated-hide-view": "^1.0.0",
     "react-native-calendars": "^1.16.1",
+    "react-native-custom-actionsheet": "0.0.3",
     "react-native-modal-dropdown": "^0.6.0",
     "react-native-router-flux": "^4.0.0-beta.28",
     "react-native-spinkit": "^1.1.1",

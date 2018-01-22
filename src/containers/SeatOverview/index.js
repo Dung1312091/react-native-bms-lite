@@ -1,12 +1,26 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { View, TouchableOpacity } from "react-native";
+import { Actions } from "react-native-router-flux";
+import { View, TouchableOpacity, AsyncStorage } from "react-native";
 import { Content, Text, Grid, Col } from "native-base";
 import ActionSheet from "react-native-actionsheet";
 import { connect } from "react-redux";
 import moment from "moment";
 import { getConfigurationOverview } from "../../actions/configurationOverview";
 import Loading from "../../components/Loading";
+const ROUTE = "route_id";
+const DATE = "date";
+const options = [
+  "Bỏ qua",
+  "Xuất bến",
+  "Hủy chuyến",
+  "Nhập chuyến",
+  "Thay đổi giờ",
+  "Thay đổi giá",
+  "Thay đổi chỗ bán",
+  "Thay đổi lịch bán"
+];
+const CANCEL_INDEX = 0;
 class SeatOverview extends Component {
   constructor(props) {
     super(props);
@@ -49,13 +63,32 @@ class SeatOverview extends Component {
       route_id: trip.data[0][0],
       from_date: fromDate,
       to_date: toDate,
-      groups: "selling_configs,fare_configs,statistic"
+      groups: "selling_configs,fare_configs,statistic",
+      start: true
     };
     this.props.getConfigurationOverview(params);
+    // try {
+    //   AsyncStorage.getItem(ROUTE).then(value => {
+    //     if (value) {
+    //       let route = JSON.parse(value);
+    //       params.route_id = route[0];
+    //       AsyncStorage.getItem(DATE).then(value => {
+    //         if (value) {
+    //           (params.fromDate = value),
+    //             (params.to_date = this.converDate(value, 3));
+    //           this.props.getConfigurationOverview(params);
+    //         }
+    //       });
+    //     } else {
+    //       this.props.getConfigurationOverview(params);
+    //     }
+    //   });
+    // } catch (error) {
+    //   // Error saving data
+    // }
   }
 
   onPress = () => {
-    // console.log(item);
     this.setState(previousState => {
       return {
         checked: !previousState.checked
@@ -69,8 +102,8 @@ class SeatOverview extends Component {
     return tomorrowDate;
   };
   dayOfWeek = date => {
-    var dates = moment(date);
-    var dow = dates.day();
+    const dates = moment(date);
+    const dow = dates.day();
     switch (dow) {
       case 0:
         return "Chủ nhật";
@@ -108,12 +141,19 @@ class SeatOverview extends Component {
   };
   renderSeat(data) {
     const { columnStyle, columnTextStyle, seatOccupancyStyle } = styles;
-    let total = null;
-    let booking = null;
+    let total = 0;
+    let booking = 0;
     return data.map((trip, i) => {
       if (trip && trip.configCustom) {
-        total = trip.configCustom.selling_configs.selling_configs[2].total;
-        booking = trip.configCustom.statistic ? trip.configCustom.statistic : 0;
+        if (
+          trip.configCustom.selling_configs &&
+          trip.configCustom.selling_configs.selling_configs[2]
+        ) {
+          total = trip.configCustom.selling_configs.selling_configs[2].total;
+          booking = trip.configCustom.statistic
+            ? trip.configCustom.statistic
+            : 0;
+        }
       }
       let id = i + Math.random(); // trip.id
       if (trip.isShow) {
@@ -166,12 +206,6 @@ class SeatOverview extends Component {
       );
     });
   }
-  converDate(date, day) {
-    let Date = moment(date).utc();
-    let tomorrow = Date.add(day, "days");
-    let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
-    return tomorrowDate;
-  }
   setUpTime = data => {
     let arr = [];
     let result = [];
@@ -192,7 +226,7 @@ class SeatOverview extends Component {
       dates.forEach(date => {
         let type = {};
         date.times.forEach(item => {
-          if (item.time === time) {
+          if (item.time === time && item.configs.selling_configs) {
             type.isShow = true;
             type.configCustom = item.configs;
           }
@@ -206,23 +240,47 @@ class SeatOverview extends Component {
     });
     return result;
   };
-  showActionSheet = () => {
+  showActionSheet = trip => {
     this.ActionSheet.show();
   };
   handlePress = i => {
     this.setState({
       selected: i
     });
+    switch (i) {
+      case 6:
+        Actions.tripdetail();
+        break;
+
+      default:
+        break;
+    }
+  };
+  buildTitleActionSheet = (time, date, route) => {
+    return (
+      <View>
+        <Text>Tác vụ</Text>
+        <Text>
+          Chuyến {time} {date}
+        </Text>
+        <Text>Sài Gòn - Nha trang</Text>
+      </View>
+    );
   };
   // getActionSheetRef = (ref) => {
   //   this.actionSheet = ref;
   //   console.warn('ref==>',ref);
   // }
   render() {
-    console.log("nhin", this.props.configurationOverviewReducers);
     let data = [];
     let response = this.props.configurationOverviewReducers;
-
+    let ActionSheetDate = this.props.dayReducers;
+    let ActionSheetRoute = this.changeRouteReducers;
+    let ActionSheetTitle = this.buildTitleActionSheet(
+      "11:20",
+      ActionSheetDate,
+      ActionSheetRoute
+    );
     var dates = moment(this.props.dayReducers, "DD-MM-YYYY").format(
       "YYYY-MM-DD"
     );
@@ -254,20 +312,6 @@ class SeatOverview extends Component {
       data = this.setUpAllDataToRender(listTripTime, trip_overview);
     }
     // const options = [ 'Cancel', 'Apple', 'Banana', 'Watermelon', 'Durian' ];
-    const options = [
-      "Cancel",
-      "Apple",
-      <Text style={{ color: "yellow" }} key={1}>
-        Banana
-      </Text>,
-      "Watermelon",
-      <Text style={{ color: "red" }} key={2}>
-        Durian
-      </Text>
-    ];
-    const CANCEL_INDEX = 0;
-    const DESTRUCTIVE_INDEX = 4;
-    const title = "Which one do you like?";
     const {
       containerStyle,
       tableStyle,
@@ -303,10 +347,9 @@ class SeatOverview extends Component {
           )}
           <ActionSheet
             ref={o => (this.ActionSheet = o)}
-            title={title}
+            title={ActionSheetTitle}
             options={options}
             cancelButtonIndex={CANCEL_INDEX}
-            destructiveButtonIndex={DESTRUCTIVE_INDEX}
             onPress={this.handlePress}
           />
         </Content>
@@ -369,13 +412,15 @@ SeatOverview.propTypes = {
   configurationOverviewReducers: PropTypes.any,
   selectDay: PropTypes.any,
   loginReducers: PropTypes.any,
-  getConfigurationOverview: PropTypes.any
+  getConfigurationOverview: PropTypes.any,
+  changeRouteReducers: PropTypes.any
 };
 const mapStateToProps = state => {
   return {
     loginReducers: state.loginReducers,
     dayReducers: state.getDayReducers,
-    configurationOverviewReducers: state.getConfigurationOverview
+    configurationOverviewReducers: state.getConfigurationOverview,
+    changeRouteReducers: state.changeRouteReducer
   };
 };
 const mapDispatchToProps = dispatch => {

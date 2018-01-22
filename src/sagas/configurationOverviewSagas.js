@@ -8,7 +8,6 @@ import { Api } from "../api/login";
 import { put, takeLatest } from "redux-saga/effects";
 function* getConfigurationOverviewSagas(action) {
   try {
-    // console.log('action.params==>',action.params);
     const response = yield Api.CallAPI(
       "https://api-sandbox.vexere.com/v1/",
       "configuration_overview",

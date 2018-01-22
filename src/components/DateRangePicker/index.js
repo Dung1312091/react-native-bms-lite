@@ -116,6 +116,11 @@ class DateRangePicker extends Component {
       to_date: toDate,
       groups: "selling_configs,fare_configs,statistic"
     };
+    // try {
+    //   AsyncStorage.setItem(DATE, fromDate).then(() => {});
+    // } catch (error) {
+    //   // Error saving data
+    // }
     this.props.selectDay(date);
     this.props.getConfigurationOverview(params);
   }
@@ -139,8 +144,8 @@ class DateRangePicker extends Component {
       "-" +
       moment(nextTomorrowDate, "YYYY-MM-DD").format("DD/MM/YYYY");
     var obj = {};
-    var a = [fromDate, tomorrowDate, nextTomorrowDate];
-    a.map((item, index) => {
+    var arrDate = [fromDate, tomorrowDate, nextTomorrowDate];
+    arrDate.map((item, index) => {
       if (index === 0) {
         obj[item] = {
           dots: [vacation],

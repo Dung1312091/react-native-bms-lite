@@ -7,7 +7,7 @@ import ModalDropdown from "react-native-modal-dropdown";
 class Dropdown extends Component {
   constructor(props) {
     super(props);
-    const { defaultIndex, defaultValue } = props;
+    const { defaultIndex, defaultValue } = this.props;
 
     if (defaultIndex && defaultValue) {
       this.state = {
@@ -19,6 +19,13 @@ class Dropdown extends Component {
       };
     }
   }
+  // componentWillReceiveProps(nextProps) {
+  //   const { defaultIndex, defaultValue } = nextProps;
+  //   console.warn("defaultValue", defaultValue);
+  //   this.setState({
+  //     selectedItem: { id: defaultIndex, value: defaultValue }
+  //   });
+  // }
   onDropdownSelect(index, value) {
     this.setState({
       selectedItem: { id: index, value: value }
