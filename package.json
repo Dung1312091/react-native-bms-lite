@@ -5,12 +5,12 @@
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
     "test": "jest",
-    "android-linux":
-      "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
+    "android-linux": "react-native bundle --platform android --dev false --entry-file index.js --bundle-output android/app/src/main/assets/index.android.bundle --assets-dest android/app/src/main/res && react-native run-android"
   },
   "dependencies": {
     "eslint": "^4.15.0",
     "eslint-plugin-react-native": "^3.2.1",
+    "lodash": "^4.17.4",
     "moment": "^2.20.1",
     "native-base": "^2.3.6",
     "react": "16.2.0",
@@ -20,6 +20,7 @@
     "react-native-calendars": "^1.16.1",
     "react-native-custom-actionsheet": "0.0.3",
     "react-native-modal-dropdown": "^0.6.0",
+    "react-native-modalbox": "^1.4.2",
     "react-native-router-flux": "^4.0.0-beta.28",
     "react-native-spinkit": "^1.1.1",
     "react-native-tab-navigator": "^0.3.4",

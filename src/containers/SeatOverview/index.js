@@ -1,15 +1,13 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Actions } from "react-native-router-flux";
-import { View, TouchableOpacity, AsyncStorage } from "react-native";
 import { Content, Text, Grid, Col } from "native-base";
+import {TouchableOpacity, View} from 'react-native';
 import ActionSheet from "react-native-actionsheet";
 import { connect } from "react-redux";
 import moment from "moment";
 import { getConfigurationOverview } from "../../actions/configurationOverview";
 import Loading from "../../components/Loading";
-const ROUTE = "route_id";
-const DATE = "date";
 const options = [
   "Bỏ qua",
   "Xuất bến",
@@ -164,9 +162,11 @@ class SeatOverview extends Component {
                 width: "100%",
                 height: "100%",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                borderBottomWidth: 1,
+                borderColor: "#d9d8dc",
               }}
-              onPress={() => this.showActionSheet(trip)}
+              onPress={() => this.props.openModel(trip)}
             >
               <View
                 style={[
@@ -184,9 +184,18 @@ class SeatOverview extends Component {
       } else {
         return (
           <Col key={id} style={columnStyle}>
-            {/* <View style={[seatOccupancyStyle, SeatOverview.calculateSeatStyle(trip)]} />
-            <Text style={columnTextStyle}>{trip.bookedQty}/{trip.totalQty} chỗ</Text> */}
-            <Text>AAAA</Text>
+            <TouchableOpacity
+              style={{
+                width: "100%",
+                height: "100%",
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor:'red',
+                borderBottomWidth: 1,
+                borderColor: "#d9d8dc",
+              }}
+            >
+            </TouchableOpacity>
           </Col>
         );
       }
@@ -194,7 +203,6 @@ class SeatOverview extends Component {
   }
   renderDataGrid(data) {
     const { columnStyle, columnTextStyle } = styles;
-
     return data.map((item, index) => {
       return (
         <Grid key={index}>
@@ -229,6 +237,8 @@ class SeatOverview extends Component {
           if (item.time === time && item.configs.selling_configs) {
             type.isShow = true;
             type.configCustom = item.configs;
+            type.time = item.time,
+            type.date = date.date
           }
         });
         data.push(type);
@@ -240,7 +250,7 @@ class SeatOverview extends Component {
     });
     return result;
   };
-  showActionSheet = trip => {
+  showActionSheet = () => {
     this.ActionSheet.show();
   };
   handlePress = i => {
@@ -405,6 +415,58 @@ const styles = {
   },
   buttonStyle: {
     marginRight: 20
+  },
+  wrapper: {
+    paddingTop: 50,
+    flex: 1
+  },
+
+  modal: {
+    justifyContent: "center",
+    alignItems: "center"
+  },
+
+  modal2: {
+    height: 230,
+    backgroundColor: "#3B5998"
+  },
+
+  modal3: {
+    height: 300,
+    width: 300
+  },
+
+  modal4: {
+    height: 300
+  },
+
+  btn: {
+    margin: 10,
+    backgroundColor: "#3B5998",
+    color: "white",
+    padding: 10
+  },
+
+  btnModal: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    width: 50,
+    height: 50,
+    backgroundColor: "transparent"
+  },
+
+  text: {
+    color: "black",
+    fontSize: 22
+  },
+  overlay: {
+    flex: 1,
+    position: "absolute",
+    left: 0,
+    top: 0,
+    width: "100%",
+    height: "100%",
   }
 };
 SeatOverview.propTypes = {

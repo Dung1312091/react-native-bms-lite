@@ -1,6 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { StyleSheet } from "react-native";
+import ActionSheet from "../../containers/ActionSheetSeat";
 import {
   Container,
   Body,
@@ -45,7 +46,18 @@ const styles = StyleSheet.create({
 class TicketScheduleScene extends React.Component {
   constructor(props) {
     super(props);
+    this.state = {
+      trip: {},
+      route: {}
+    };
   }
+  abc = trip => {
+    this.setState({
+      trip: trip,
+      route: this.props.changeRouteReducers
+    });
+    this.actionSheetReducer.showAddModal();
+  };
   render() {
     return (
       <Container>
@@ -72,7 +84,14 @@ class TicketScheduleScene extends React.Component {
             <DateRangePicker />
           </Col>
         </Grid>
-        <SeatOverview />
+        <SeatOverview openModel={this.abc} />
+        <ActionSheet
+          ref={ref => {
+            this.actionSheetReducer = ref;
+          }}
+          trip={this.state.trip}
+          route={this.state.route}
+        />
       </Container>
     );
   }
@@ -82,7 +101,8 @@ SeatOverview.propTypes = {
 };
 const mapStateToProps = state => {
   return {
-    loginReducers: state.loginReducers
+    loginReducers: state.loginReducers,
+    changeRouteReducers: state.changeRouteReducer
   };
 };
 export default connect(mapStateToProps, null)(TicketScheduleScene);

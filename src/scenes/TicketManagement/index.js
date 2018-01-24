@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Map, List } from "immutable";
 import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
 import { connect } from "react-redux";
+import _ from "lodash";
 import {
   Container,
   Body,
@@ -21,12 +21,10 @@ class TicketManagement extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: Map({
-        route: List()
-      })
+      data: []
     };
   }
-  componentWillMount() {
+  setUpAllDataToRender = routeData => {
     let result = [];
     let floor_1 = [];
     let floor_2 = [];
@@ -34,7 +32,7 @@ class TicketManagement extends React.Component {
     let rowFloor_2 = 0;
     let colFloor_1 = 0;
     let colFloor_2 = 0;
-    let listRoute = this.props.changeRouteReducers.value;
+    let listRoute = routeData;
     let seatDiagram = listRoute[6].split("~");
     let infor = seatDiagram[1].split("|");
     let coach = infor[1]; //so tang
@@ -94,49 +92,85 @@ class TicketManagement extends React.Component {
         }
       }
     }
-    console.log("floor_1=>", result);
+    return result;
+  };
+  componentWillMount() {
+    let data = this.setUpAllDataToRender(this.props.changeRouteReducers.value);
+    this.setState({
+      data: data
+    });
+    console.log("floor_1=>", data);
+  }
+  componentWillReceiveProps(nextProps) {
+    if (
+      this.props.changeRouteReducers.value !==
+      nextProps.changeRouteReducers.value
+    ) {
+      let data = this.setUpAllDataToRender(nextProps.changeRouteReducers.value);
+      this.setState({
+        data: data
+      });
+    }
   }
   renderSeat = seatNumber => {
     return seatNumber.map((item, index) => {
-      return (
-        <Col
-          key={index}
-          style={{
-            height: 40,
-            margin: 10,
-            borderBottomWidth: 1,
-            borderColor: "#d9d8dc",
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          <TouchableOpacity
+      if (_.isEmpty(item)) {
+        return (
+          <Col
+            key={index}
             style={{
-              width: 42,
-              height: 42,
-              alignItems: "center",
+              height: 40,
+              margin: 10,
+              // borderBottomWidth: 1,
+              // borderColor: "#d9d8dc",
               justifyContent: "center",
-              backgroundColor: "red",
-              borderRadius: 5
+              alignItems: "center"
+            }}
+          />
+        );
+      } else {
+        return (
+          <Col
+            key={index}
+            style={{
+              height: 40,
+              margin: 10,
+              // borderBottomWidth: 1,
+              // borderColor: "#d9d8dc",
+              justifyContent: "center",
+              alignItems: "center"
             }}
           >
-            <Text>aaaaa</Text>
-          </TouchableOpacity>
-        </Col>
-      );
+            <TouchableOpacity
+              style={{
+                width: 42,
+                height: 42,
+                alignItems: "center",
+                justifyContent: "center",
+                backgroundColor: "red",
+                borderRadius: 5
+              }}
+            >
+              <Text>{item._label}</Text>
+            </TouchableOpacity>
+          </Col>
+        );
+      }
     });
   };
   renderSeatMap = arr => {
     return arr.map((item, index) => {
+      // console.log("item=>", item);
       return (
         <Grid key={index} style={{ flex: 1, backgroundColor: "#EFEFEF" }}>
-          {this.renderSeat(["1", "2", "3"])}
+          {this.renderSeat(item)}
         </Grid>
       );
     });
   };
   render() {
     // console.log("==>", this.state.data.get("route"));
+    let { data } = this.state;
     return (
       <Container style={{ backgroundColor: "#EFEFEF" }}>
         <Header style={styles.headerStyle}>
@@ -165,25 +199,13 @@ class TicketManagement extends React.Component {
                   backgroundColor: "#EFEFEF"
                 }}
               >
-                {this.renderSeatMap([
-                  "1",
-                  "2",
-                  "3",
-                  "4",
-                  "5",
-                  "6",
-                  "7",
-                  "8",
-                  "6",
-                  "7",
-                  "8"
-                ])}
+                {this.renderSeatMap(data[0])}
               </View>
             </Content>
           </Tab>
           <Tab heading="Tầng 2" style={styles.tabHeader}>
             <Content style={{ marginLeft: 50, marginRight: 50 }}>
-              {this.renderSeatMap(["1", "2", "3", "4", "5", "6"])}
+              {data.length > 1 ? this.renderSeatMap(data[1]) : null}
             </Content>
           </Tab>
         </Tabs>
