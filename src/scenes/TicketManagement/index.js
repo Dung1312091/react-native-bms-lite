@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import Seat from "../../components/Seat";
+import { Text, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
-import _ from "lodash";
 import {
   Container,
   Body,
@@ -14,8 +14,7 @@ import {
   Content,
   Tabs,
   Tab,
-  Grid,
-  Col
+  Grid
 } from "native-base";
 class TicketManagement extends React.Component {
   constructor(props) {
@@ -99,7 +98,6 @@ class TicketManagement extends React.Component {
     this.setState({
       data: data
     });
-    console.log("floor_1=>", data);
   }
   componentWillReceiveProps(nextProps) {
     if (
@@ -113,54 +111,12 @@ class TicketManagement extends React.Component {
     }
   }
   renderSeat = seatNumber => {
-    return seatNumber.map((item, index) => {
-      if (_.isEmpty(item)) {
-        return (
-          <Col
-            key={index}
-            style={{
-              height: 40,
-              margin: 10,
-              // borderBottomWidth: 1,
-              // borderColor: "#d9d8dc",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          />
-        );
-      } else {
-        return (
-          <Col
-            key={index}
-            style={{
-              height: 40,
-              margin: 10,
-              // borderBottomWidth: 1,
-              // borderColor: "#d9d8dc",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                width: 42,
-                height: 42,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "red",
-                borderRadius: 5
-              }}
-            >
-              <Text>{item._label}</Text>
-            </TouchableOpacity>
-          </Col>
-        );
-      }
+    return seatNumber.map(item => {
+      return <Seat key={item._label} item={item} />;
     });
   };
   renderSeatMap = arr => {
     return arr.map((item, index) => {
-      // console.log("item=>", item);
       return (
         <Grid key={index} style={{ flex: 1, backgroundColor: "#EFEFEF" }}>
           {this.renderSeat(item)}
@@ -169,7 +125,6 @@ class TicketManagement extends React.Component {
     });
   };
   render() {
-    // console.log("==>", this.state.data.get("route"));
     let { data } = this.state;
     return (
       <Container style={{ backgroundColor: "#EFEFEF" }}>
@@ -209,6 +164,37 @@ class TicketManagement extends React.Component {
             </Content>
           </Tab>
         </Tabs>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10
+          }}
+        >
+          <Text style={{color:'#1B291F'}}>TỔNG CHỖ BÁN ONLINE: 8 chỗ</Text>
+          <Text>(chạm vào 1 ghế để tắt hoặc mở ghế bán online)</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginLeft: 10,
+            marginRight: 10
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ width: 20, height: 20, backgroundColor: "#FAADD3" }} />
+            <Text style={{color: '#1B2529', marginLeft: 3,}}>Ghế đặt chỗ</Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ width: 20, height: 20, backgroundColor: "#FAF87D" }} />
+            <Text  style={{color: '#1B2529', marginLeft: 3,}}>Ghế đặt chỗ</Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <View style={{ width: 20, height: 20, backgroundColor: "#007AFF" }} />
+            <Text style={{color: '#1B2529', marginLeft: 3,}}>Ghế đặt chỗ</Text>
+          </View>
+        </View>
       </Container>
     );
   }

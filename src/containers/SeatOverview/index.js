@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Actions } from "react-native-router-flux";
 import { Content, Text, Grid, Col } from "native-base";
-import {TouchableOpacity, View} from 'react-native';
+import { TouchableOpacity, View } from "react-native";
 import ActionSheet from "react-native-actionsheet";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -85,7 +85,6 @@ class SeatOverview extends Component {
     //   // Error saving data
     // }
   }
-
   onPress = () => {
     this.setState(previousState => {
       return {
@@ -148,9 +147,9 @@ class SeatOverview extends Component {
           trip.configCustom.selling_configs.selling_configs[2]
         ) {
           total = trip.configCustom.selling_configs.selling_configs[2].total;
-          booking = trip.configCustom.statistic
-            ? trip.configCustom.statistic
-            : 0;
+          // booking = trip.configCustom.statistic
+          //   ? trip.configCustom.statistic
+          //   : null;
         }
       }
       let id = i + Math.random(); // trip.id
@@ -164,7 +163,7 @@ class SeatOverview extends Component {
                 alignItems: "center",
                 justifyContent: "center",
                 borderBottomWidth: 1,
-                borderColor: "#d9d8dc",
+                borderColor: "#d9d8dc"
               }}
               onPress={() => this.props.openModel(trip)}
             >
@@ -183,19 +182,18 @@ class SeatOverview extends Component {
         );
       } else {
         return (
-          <Col key={id} style={columnStyle}>
+          <Col style={columnStyle} key={id}>
             <TouchableOpacity
               style={{
                 width: "100%",
                 height: "100%",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor:'red',
+                backgroundColor: "red",
                 borderBottomWidth: 1,
-                borderColor: "#d9d8dc",
+                borderColor: "#d9d8dc"
               }}
-            >
-            </TouchableOpacity>
+            />
           </Col>
         );
       }
@@ -237,8 +235,7 @@ class SeatOverview extends Component {
           if (item.time === time && item.configs.selling_configs) {
             type.isShow = true;
             type.configCustom = item.configs;
-            type.time = item.time,
-            type.date = date.date
+            (type.time = item.time), (type.date = date.date);
           }
         });
         data.push(type);
@@ -320,6 +317,7 @@ class SeatOverview extends Component {
       });
       let listTripTime = this.setUpTime(trip_overview);
       data = this.setUpAllDataToRender(listTripTime, trip_overview);
+      console.log("data", data);
     }
     // const options = [ 'Cancel', 'Apple', 'Banana', 'Watermelon', 'Durian' ];
     const {
@@ -466,7 +464,7 @@ const styles = {
     left: 0,
     top: 0,
     width: "100%",
-    height: "100%",
+    height: "100%"
   }
 };
 SeatOverview.propTypes = {
