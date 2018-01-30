@@ -34,6 +34,7 @@ class Dropdown extends Component {
   }
 
   renderRow(rowData, rowID, highlighted) {
+    console.warn(rowData);
     return (
       <TouchableHighlight>
         <View
@@ -42,6 +43,7 @@ class Dropdown extends Component {
             highlighted ? styles.highlightItemStyle : {}
           ]}
         >
+          {/* <Text style={styles.textStyle}>{rowData[2]}</Text> */}
           <Text style={styles.textStyle}>{rowData[2]}</Text>
         </View>
       </TouchableHighlight>

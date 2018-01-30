@@ -510,7 +510,7 @@ const mapStateToProps = state => {
     loginReducers: state.loginReducers,
     dayReducers: state.getDayReducers,
     configurationOverviewReducers: state.getConfigurationOverview,
-    changeRouteReducers: state.changeRouteReducer,
+    changeRouteReducers: state.changeRouteReducer
     // selectTripReducer: state.selectTripReducer,
     // seatOverviewReducers: state.seatOverviewReducers
   };
