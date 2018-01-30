@@ -24,7 +24,7 @@ class ActionSheet extends Component {
     switch (index) {
       case 5:
         this.actionSheet.hideAddModal();
-        Actions.tripdetail();
+        Actions.seatDiagram();
         break;
 
       default:

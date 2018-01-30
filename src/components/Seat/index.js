@@ -6,33 +6,50 @@ class Seat extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selectedIndex: ""
+      selectedIndex: "",
+      selected: false
     };
   }
-  handleClick = selectedIndex => {
-    let existColor = this.state.selectedIndex;
-    this.setState({
-      selectedIndex: existColor === selectedIndex ? "" : selectedIndex
-    });
+  handleClick = item => {
+    if (item._isPaymentStatus === null) {
+      this.setState({
+        selected: !this.state.selected
+      });
+    }
   };
-
+  componentWillMount() {
+    if (this.props.item._isOnline) {
+      this.setState({
+        selected: true
+      });
+    }
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState !== this.state) {
+      return true;
+    }
+    return false;
+  }
   render() {
     let item = this.props.item;
-    let flags = false;
-    if (this.state.selectedIndex === item._label) {
-      flags = true;
-    }
     if (!_.isEmpty(item)) {
       return (
         <Col style={styles.colStyle}>
           <Button
-            style={[styles.seatStyle]}
-            onPress={() => this.handleClick(item._label)}
+            style={[
+              styles.seatStyle,
+              item._isPaymentStatus === 1
+                ? { backgroundColor: "#FAACD2" }
+                : item._isPaymentStatus === 2
+                  ? {
+                      backgroundColor: "#FAF87C"
+                    }
+                  : null
+            ]}
+            onPress={() => this.handleClick(item)}
           >
-            <View style={flags ? styles.selectedSeat : null} />
-            <Text style={{ position: "absolute", top: 10, left: 8 }}>
-              {item._label}
-            </Text>
+            <View style={this.state.selected ? styles.selectedSeat : null} />
+            <Text>{item._label}</Text>
           </Button>
         </Col>
       );
@@ -51,11 +68,11 @@ const styles = StyleSheet.create({
   seatStyle: {
     width: 42,
     height: 42,
-    alignItems: "flex-end",
-    justifyContent: "flex-end",
+    alignItems: "center",
+    justifyContent: "center",
     backgroundColor: "#fff",
-    borderRadius: 5,
-    alignContent: "flex-end"
+    borderRadius: 5
+    // alignContent: "flex-end"
   },
   selectedSeat: {
     width: 20,
@@ -71,7 +88,8 @@ const styles = StyleSheet.create({
     borderLeftWidth: 10,
     borderRadius: 5,
     position: "absolute",
-    top: 22
+    top: 22,
+    left: 22
   }
 });
 export default Seat;

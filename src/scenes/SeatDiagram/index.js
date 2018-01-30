@@ -1,8 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { Text, StyleSheet, View, TouchableOpacity } from "react-native";
+import Seat from "../../components/Seat";
+import { Text, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
-import _ from "lodash";
 import { Actions } from "react-native-router-flux";
 import {
   Container,
@@ -15,17 +15,23 @@ import {
   Content,
   Tabs,
   Tab,
-  Grid,
-  Col
+  Grid
 } from "native-base";
-class TripDetail extends React.Component {
+class SeatDiagram extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       data: []
     };
   }
-  setUpAllDataToRender = routeData => {
+  buildString = (lable, coach, row, col, id) => {
+    if (id) {
+      return `${lable}|${coach}|${row}|${col}|${id}`;
+    } else {
+      return `${lable}|${coach}|${row}|${col}`;
+    }
+  };
+  setUpAllDataToRender = (routeData, tripDetail, ticketInfo) => {
     let result = [];
     let floor_1 = [];
     let floor_2 = [];
@@ -35,9 +41,18 @@ class TripDetail extends React.Component {
     let colFloor_2 = 0;
     let listRoute = routeData;
     let seatDiagram = listRoute[6].split("~");
+    let seatDiagramId = seatDiagram[0];
     let infor = seatDiagram[1].split("|");
     let coach = infor[1]; //so tang
     let startIndex = 6;
+    // let tripDetail = this.props.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
+    //   "~"
+    // );
+    // console.log("tripDetail==>", tripDetail);
+    // let ticketInfo = this.props.seatOverviewReducers.ticketInfo.data.tickets;
+
+    // console.log("seatOverviewReducers==>", ticketInfo);
+    // console.log("ticketInfo==>", ticketInfo);
     if (+coach === 1) {
       startIndex = 5;
       floor_1 = seatDiagram[2].split("|");
@@ -54,16 +69,43 @@ class TripDetail extends React.Component {
     let tmpSeats = [];
     for (let i = startIndex; i < seatDiagram.length; i++) {
       let item = seatDiagram[i].split("|");
+      let isOnline = false;
+      let paymentStatus = null;
       const itemCoach = +item[5];
       const itemRow = +item[6];
       const itemCol = +item[7];
+      // console.log("tripDetail==>", tripDetail);
+      let strFindSeatOnline = this.buildString(
+        item[4],
+        itemCoach,
+        itemRow,
+        itemCol,
+        seatDiagramId
+      );
+      let strPaymentMethodSeat = this.buildString(
+        item[4],
+        itemCoach,
+        itemRow,
+        itemCol
+      );
+      // var strFind = `${item[4]}|${itemCoach}|${itemRow}|${itemCol}|${seatDiagramId}`;
+      if (tripDetail.indexOf(strFindSeatOnline) !== -1) {
+        isOnline = true;
+      }
+      let index = ticketInfo.findIndex(x => x[0] == strPaymentMethodSeat);
+      if (index !== -1) {
+        paymentStatus = +ticketInfo[index][1];
+      }
       tmpSeats.push({
         _label: item[4] || "",
         _coach: itemCoach,
         _row: itemRow,
-        _col: itemCol
+        _col: itemCol,
+        _isOnline: isOnline,
+        _isPaymentStatus: paymentStatus
       });
     }
+    // console.log("tmpSeats=>", tmpSeats);
     for (let c = 1; c <= coach; c++) {
       let currentRows = rowFloor_1;
       let currentCols = colFloor_1;
@@ -80,12 +122,15 @@ class TripDetail extends React.Component {
           const items = tmpSeats.filter(
             item => item._coach === c && item._row === a && item._col === b
           );
+          // console.log("items=>", items);
           if (items.length > 0) {
             result[c - 1][a - 1][b - 1] = {
               _label: items[0]._label,
               _coach: c,
               _row: a,
-              _col: b
+              _col: b,
+              _isOnline: items[0]._isOnline,
+              _isPaymentStatus: items[0]._isPaymentStatus
             };
           } else {
             result[c - 1][a - 1][b - 1] = {};
@@ -93,21 +138,48 @@ class TripDetail extends React.Component {
         }
       }
     }
+    console.log("result=>", result);
     return result;
   };
   componentWillMount() {
-    let data = this.setUpAllDataToRender(this.props.changeRouteReducers.value);
+    console.log(
+      " this.props.seatOverviewReducers1==>",
+      this.props.seatOverviewReducers
+    );
+    let ticketInfo = this.props.seatOverviewReducers.ticketInfo.data.tickets;
+    let tripDetail = this.props.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
+      "~"
+    );
+    let data = this.setUpAllDataToRender(
+      this.props.changeRouteReducers.value,
+      tripDetail,
+      ticketInfo
+    );
     this.setState({
       data: data
     });
-    console.log("floor_1=>", data);
+  }
+  back = () => {
+    Actions.pop();
   }
   componentWillReceiveProps(nextProps) {
+    console.log(
+      " this.props.seatOverviewReducers2==>",
+      nextProps.seatOverviewReducers
+    );
     if (
       this.props.changeRouteReducers.value !==
       nextProps.changeRouteReducers.value
     ) {
-      let data = this.setUpAllDataToRender(nextProps.changeRouteReducers.value);
+      let ticketInfo = nextProps.seatOverviewReducers.ticketInfo.data.tickets;
+      let tripDetail = nextProps.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
+        "~"
+      );
+      let data = this.setUpAllDataToRender(
+        nextProps.changeRouteReducers.value,
+        tripDetail,
+        ticketInfo
+      );
       this.setState({
         data: data
       });
@@ -115,71 +187,26 @@ class TripDetail extends React.Component {
   }
   renderSeat = seatNumber => {
     return seatNumber.map((item, index) => {
-      if (_.isEmpty(item)) {
-        return (
-          <Col
-            key={index}
-            style={{
-              height: 40,
-              margin: 10,
-              // borderBottomWidth: 1,
-              // borderColor: "#d9d8dc",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          />
-        );
-      } else {
-        return (
-          <Col
-            key={index}
-            style={{
-              height: 40,
-              margin: 10,
-              // borderBottomWidth: 1,
-              // borderColor: "#d9d8dc",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <TouchableOpacity
-              style={{
-                width: 42,
-                height: 42,
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "red",
-                borderRadius: 5
-              }}
-            >
-              <Text>{item._label}</Text>
-            </TouchableOpacity>
-          </Col>
-        );
-      }
+      return <Seat key={index} item={item} />;
     });
   };
-  backRoute =() =>{
-    Actions.pop()
-  }
   renderSeatMap = arr => {
     return arr.map((item, index) => {
-      // console.log("item=>", item);
+      let gridStyle = index === 0 ? { marginTop: 5 } : { marginTop: -10 };
       return (
-        <Grid key={index} style={{ flex: 1, backgroundColor: "#EFEFEF" }}>
+        <Grid key={index} style={[{ backgroundColor: "#EFEFEF" }, gridStyle]}>
           {this.renderSeat(item)}
         </Grid>
       );
     });
   };
   render() {
-    // console.log("==>", this.state.data.get("route"));
     let { data } = this.state;
     return (
       <Container style={{ backgroundColor: "#EFEFEF" }}>
         <Header style={styles.headerStyle}>
           <Left>
-            <Button transparent onPress={this.backRoute}>
+            <Button transparent onPress={this.back}>
               <Icon name="arrow-back" style={styles.headerTextStyle} />
             </Button>
           </Left>
@@ -213,6 +240,43 @@ class TripDetail extends React.Component {
             </Content>
           </Tab>
         </Tabs>
+        <View
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            marginTop: 10
+          }}
+        >
+          <Text style={{ color: "#1B291F" }}>TỔNG CHỖ BÁN ONLINE: 8 chỗ</Text>
+          <Text>(chạm vào 1 ghế để tắt hoặc mở ghế bán online)</Text>
+        </View>
+        <View
+          style={{
+            flexDirection: "row",
+            justifyContent: "space-between",
+            marginLeft: 10,
+            marginRight: 10
+          }}
+        >
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{ width: 20, height: 20, backgroundColor: "#FAADD3" }}
+            />
+            <Text style={{ color: "#1B2529", marginLeft: 3 }}>Ghế đặt chỗ</Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{ width: 20, height: 20, backgroundColor: "#FAF87D" }}
+            />
+            <Text style={{ color: "#1B2529", marginLeft: 3 }}>Ghế đặt chỗ</Text>
+          </View>
+          <View style={{ flexDirection: "row" }}>
+            <View
+              style={{ width: 20, height: 20, backgroundColor: "#007AFF" }}
+            />
+            <Text style={{ color: "#1B2529", marginLeft: 3 }}>Ghế đặt chỗ</Text>
+          </View>
+        </View>
       </Container>
     );
   }
@@ -245,12 +309,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#EFEFEF"
   }
 });
-TripDetail.propTypes = {
+SeatDiagram.propTypes = {
   changeRouteReducers: PropTypes.any
 };
 const mapStateToProps = state => {
   return {
-    changeRouteReducers: state.changeRouteReducer
+    changeRouteReducers: state.changeRouteReducer,
+    selectTripReducer: state.selectTripReducer,
+    seatOverviewReducers: state.seatOverviewReducers
   };
 };
 // const mapDispatchToProps = dispatch => {
@@ -260,4 +326,4 @@ const mapStateToProps = state => {
 //     }
 //   };
 
-export default connect(mapStateToProps, null)(TripDetail);
+export default connect(mapStateToProps, null)(SeatDiagram);

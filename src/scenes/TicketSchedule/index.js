@@ -51,7 +51,7 @@ class TicketScheduleScene extends React.Component {
       route: {}
     };
   }
-  abc = trip => {
+  onpenActionSheet = trip => {
     this.setState({
       trip: trip,
       route: this.props.changeRouteReducers
@@ -84,7 +84,7 @@ class TicketScheduleScene extends React.Component {
             <DateRangePicker />
           </Col>
         </Grid>
-        <SeatOverview openModel={this.abc} />
+        <SeatOverview openModel={this.onpenActionSheet} />
         <ActionSheet
           ref={ref => {
             this.actionSheetReducer = ref;

@@ -43,6 +43,7 @@ class DropdownTrip extends Component {
     // } catch (error) {
     //   // Error saving data
     // }
+    console.log("value=>", value);
     this.props.changeRouteId(value[0], value);
     this.props.getConfigurationOverview(params);
   };
@@ -66,7 +67,7 @@ class DropdownTrip extends Component {
       defaultIndex: 1,
       defaultValue: trip[0]
     });
-    this.props.changeRouteId(1, trip[0]);
+    this.props.changeRouteId(trip[0][0], trip[0]);
     // try {
     //   AsyncStorage.getItem(ROUTE).then(value => {
     //     if (value) {

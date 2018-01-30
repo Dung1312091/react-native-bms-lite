@@ -1,13 +1,14 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
-import { Actions } from "react-native-router-flux";
 import { Content, Text, Grid, Col } from "native-base";
 import { TouchableOpacity, View } from "react-native";
 import ActionSheet from "react-native-actionsheet";
 import { connect } from "react-redux";
 import moment from "moment";
 import { getConfigurationOverview } from "../../actions/configurationOverview";
+import { selectTrip } from "../../actions/tripDetail";
 import Loading from "../../components/Loading";
+import { getTicketInfo, buildDataRenderSeatDiagram } from "./action";
 const options = [
   "Bỏ qua",
   "Xuất bến",
@@ -64,6 +65,7 @@ class SeatOverview extends Component {
       groups: "selling_configs,fare_configs,statistic",
       start: true
     };
+    console.log("param=>", params);
     this.props.getConfigurationOverview(params);
     // try {
     //   AsyncStorage.getItem(ROUTE).then(value => {
@@ -85,6 +87,29 @@ class SeatOverview extends Component {
     //   // Error saving data
     // }
   }
+  // componentWillReceiveProps(nextProps) {
+  //   console.log("this.props.selectTripReducer", nextProps.selectTripReducer);
+  //   console.log(
+  //     "this.props.changeRouteReducers",
+  //     nextProps.changeRouteReducers
+  //   );
+  //   console.log(
+  //     "this.props.seatOverviewReducers",
+  //     nextProps.seatOverviewReducers
+  //   );
+  //   if (Object.keys(nextProps.seatOverviewReducers).length > 0 && this.props.seatOverviewReducers!==nextProps.seatOverviewReducers) {
+  //     console.log("aaaaaaaa", this.props.seatOverviewReducers);
+  //     let ticketInfo = nextProps.seatOverviewReducers.ticketInfo.data.tickets;
+  //     let tripDetail = nextProps.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
+  //       "~"
+  //     );
+  //     this.props.buildDataRenderSeatDiagram(
+  //       nextProps.changeRouteReducers.value,
+  //       tripDetail,
+  //       ticketInfo
+  //     );
+  //   }
+  // }
   onPress = () => {
     this.setState(previousState => {
       return {
@@ -155,7 +180,7 @@ class SeatOverview extends Component {
       let id = i + Math.random(); // trip.id
       if (trip.isShow) {
         return (
-          <Col key={id}>
+          <Col key={id} style={columnStyle}>
             <TouchableOpacity
               style={{
                 width: "100%",
@@ -165,7 +190,7 @@ class SeatOverview extends Component {
                 borderBottomWidth: 1,
                 borderColor: "#d9d8dc"
               }}
-              onPress={() => this.props.openModel(trip)}
+              onPress={() => this.showActionSheet(trip)}
             >
               <View
                 style={[
@@ -174,7 +199,7 @@ class SeatOverview extends Component {
                 ]}
               />
               <Text style={columnTextStyle}>
-                {booking}/{total} chỗ
+                {booking}/{total} chỗ123
               </Text>
               <Text style={columnTextStyle}>Từ 200k -20%</Text>
             </TouchableOpacity>
@@ -200,10 +225,10 @@ class SeatOverview extends Component {
     });
   }
   renderDataGrid(data) {
-    const { columnStyle, columnTextStyle } = styles;
+    const { columnStyle, columnTextStyle, tableStyle } = styles;
     return data.map((item, index) => {
       return (
-        <Grid key={index}>
+        <Grid key={index} style={tableStyle}>
           <Col style={columnStyle}>
             <Text style={columnTextStyle}>{item.time}</Text>
           </Col>
@@ -226,13 +251,18 @@ class SeatOverview extends Component {
     return result.sort();
   };
   setUpAllDataToRender = (times, dates) => {
+    console.log("dates=>", dates);
     let result = [];
     times.forEach(time => {
       let data = [];
       dates.forEach(date => {
         let type = {};
         date.times.forEach(item => {
-          if (item.time === time && item.configs.selling_configs) {
+          if (
+            item.time === time &&
+            item.configs.selling_configs &&
+            item.configs.selling_configs.selling_configs[2] !== undefined
+          ) {
             type.isShow = true;
             type.configCustom = item.configs;
             (type.time = item.time), (type.date = date.date);
@@ -247,21 +277,19 @@ class SeatOverview extends Component {
     });
     return result;
   };
-  showActionSheet = () => {
-    this.ActionSheet.show();
-  };
-  handlePress = i => {
-    this.setState({
-      selected: i
-    });
-    switch (i) {
-      case 6:
-        Actions.tripdetail();
-        break;
+  showActionSheet = trip => {
+    let route = this.props.changeRouteReducers;
 
-      default:
-        break;
-    }
+    let dateParam = moment(trip.date, "YYYY-MM-DD").format("DD-MM-YYYY");
+    let params = {
+      trip: route.route_id,
+      date: `${trip.time} ${dateParam}`,
+      fields: "SeatCode,Status,PaymentInfo"
+    };
+    // console.log("==>", params);
+    this.props.getTicketInfo(params);
+    this.props.openModel(trip);
+    this.props.selectTrip(trip);
   };
   buildTitleActionSheet = (time, date, route) => {
     return (
@@ -281,6 +309,7 @@ class SeatOverview extends Component {
   render() {
     let data = [];
     let response = this.props.configurationOverviewReducers;
+    // console.log("getConfigurationOverview=>", getConfigurationOverview);
     let ActionSheetDate = this.props.dayReducers;
     let ActionSheetRoute = this.changeRouteReducers;
     let ActionSheetTitle = this.buildTitleActionSheet(
@@ -347,7 +376,8 @@ class SeatOverview extends Component {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                flex: 1
+                flex: 1,
+                justifyContent: "center"
               }}
             >
               <Text>Nhà xe chưa mở bán</Text>
@@ -389,7 +419,7 @@ const styles = {
   },
   columnStyle: {
     height: 50,
-    padding: 10,
+    // padding: 10,
     borderBottomWidth: 1,
     borderColor: "#d9d8dc",
     justifyContent: "center",
@@ -480,13 +510,24 @@ const mapStateToProps = state => {
     loginReducers: state.loginReducers,
     dayReducers: state.getDayReducers,
     configurationOverviewReducers: state.getConfigurationOverview,
-    changeRouteReducers: state.changeRouteReducer
+    changeRouteReducers: state.changeRouteReducer,
+    // selectTripReducer: state.selectTripReducer,
+    // seatOverviewReducers: state.seatOverviewReducers
   };
 };
 const mapDispatchToProps = dispatch => {
   return {
     getConfigurationOverview: params => {
       dispatch(getConfigurationOverview(params));
+    },
+    selectTrip: trip => {
+      dispatch(selectTrip(trip));
+    },
+    getTicketInfo: params => {
+      dispatch(getTicketInfo(params));
+    },
+    buildDataRenderSeatDiagram: (route, tripDetail, ticketInfo) => {
+      dispatch(buildDataRenderSeatDiagram(route, tripDetail, ticketInfo));
     }
   };
 };
