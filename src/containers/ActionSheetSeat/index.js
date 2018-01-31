@@ -60,12 +60,13 @@ class ActionSheet extends Component {
     }
   }
   render() {
+    const height = 420;
     return (
       <VxrActionSheet
         ref={ref => {
           this.actionSheet = ref;
         }}
-        height="68%"
+        height={height}
         listItem={list}
         tripDate={this.state.tripDate}
         route={this.state.route}

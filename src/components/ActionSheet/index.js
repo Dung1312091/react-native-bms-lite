@@ -24,7 +24,7 @@ class VxrActionSheet extends Component {
       if (index !== list.length - 1) {
         myStyle = {
           borderBottomColor: "#DCDCDC",
-          borderBottomWidth: 2
+          borderBottomWidth: 1
         };
       }
       return (

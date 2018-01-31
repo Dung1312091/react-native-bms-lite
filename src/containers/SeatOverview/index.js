@@ -24,7 +24,9 @@ class SeatOverview extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected: ""
+      selected: "",
+      fromAreaId: "",
+      toAreaId: ""
     };
   }
   static calculateSeatStyle(bookedQty, totalQty) {
@@ -56,6 +58,7 @@ class SeatOverview extends Component {
     let user = this.props.loginReducers.user;
     let token = this.props.loginReducers.token;
     let trip = JSON.parse(get_trip);
+    console.log("trip", trip);
     let params = {
       access_token: token,
       company_id: user.data.CompId,
@@ -65,8 +68,11 @@ class SeatOverview extends Component {
       groups: "selling_configs,fare_configs,statistic",
       start: true
     };
-
     this.props.getConfigurationOverview(params);
+    this.setState({
+      fromAreaId: trip.data[0][7].split("|")[0],
+      toAreaId: trip.data[0][8].split("|")[0]
+    });
     // try {
     //   AsyncStorage.getItem(ROUTE).then(value => {
     //     if (value) {
@@ -87,29 +93,10 @@ class SeatOverview extends Component {
     //   // Error saving data
     // }
   }
-  // componentWillReceiveProps(nextProps) {
-  //   console.log("this.props.selectTripReducer", nextProps.selectTripReducer);
-  //   console.log(
-  //     "this.props.changeRouteReducers",
-  //     nextProps.changeRouteReducers
-  //   );
-  //   console.log(
-  //     "this.props.seatOverviewReducers",
-  //     nextProps.seatOverviewReducers
-  //   );
-  //   if (Object.keys(nextProps.seatOverviewReducers).length > 0 && this.props.seatOverviewReducers!==nextProps.seatOverviewReducers) {
-  //     console.log("aaaaaaaa", this.props.seatOverviewReducers);
-  //     let ticketInfo = nextProps.seatOverviewReducers.ticketInfo.data.tickets;
-  //     let tripDetail = nextProps.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
-  //       "~"
-  //     );
-  //     this.props.buildDataRenderSeatDiagram(
-  //       nextProps.changeRouteReducers.value,
-  //       tripDetail,
-  //       ticketInfo
-  //     );
-  //   }
-  // }
+  componentWillReceiveProps(nextProps) {
+    console.log("this.props", this.props);
+    console.log("nextProps", nextProps);
+  }
   onPress = () => {
     this.setState(previousState => {
       return {
@@ -161,10 +148,28 @@ class SeatOverview extends Component {
     }
     return result;
   };
+  findConfigsFare = (arr, str) => {
+    let result = null;
+    arr.findIndex(function(x) {
+      if (!x.indexOf(str)) {
+        result = x;
+        return result;
+      }
+    });
+    return result;
+  };
+  splitStr = str => {
+    if (str.length > 1) return str.slice(0, 3);
+    return str;
+  };
+  caculatePrice = (price, discount) => {
+    return +price - +price * discount / 100;
+  };
   renderSeat(data) {
     const { columnStyle, columnTextStyle, seatOccupancyStyle } = styles;
     let total = 0;
     let booking = 0;
+    let price = 0;
     return data.map((trip, i) => {
       if (trip && trip.configCustom) {
         if (
@@ -175,6 +180,40 @@ class SeatOverview extends Component {
         }
         if (trip.configCustom.statistic && trip.configCustom.statistic.booked)
           booking = +trip.configCustom.statistic.booked;
+        let fare_configs = trip.configCustom.fare_configs;
+        if (fare_configs) {
+          console.log("qqqq");
+          if (fare_configs.fare_info) {
+            let fare_info = fare_configs.fare_info.split("~");
+            let str = `${this.state.fromAreaId}|${this.state.toAreaId}`;
+            let fareArr = this.findConfigsFare(fare_info, str);
+            if (fareArr) {
+              let item = fareArr.split("||");
+              console.log("item=>", fareArr);
+              let res1 = null;
+              let res2 = null;
+              if (item.length > 1 && item[1] !== "") {
+                res1 = item[1].split("|");
+              } else {
+                res2 = item[0].split("|");
+              }
+              let kq1 = [];
+              let kq2 = null;
+              // console.log("res=>", res);
+              if (res1) {
+                res1.forEach(item => {
+                  let temp = item.split(":");
+                  kq1.push(temp[1]);
+                });
+                kq1.sort();
+              } else {
+                kq2 = res2[2];
+              }
+              price = kq1[0] ? kq1[0] : kq2 ? kq2 : "0";
+              // console.log("res=>", kq);
+            }
+          }
+        }
       }
       let id = i + Math.random(); // trip.id
       if (trip.isShow) {
@@ -197,10 +236,18 @@ class SeatOverview extends Component {
                   SeatOverview.calculateSeatStyle(booking, total)
                 ]}
               />
-              <Text style={columnTextStyle}>
+              <Text style={{ fontSize: 12 }}>
                 {booking}/{total} chỗ
               </Text>
-              <Text style={columnTextStyle}>Từ 200k -20%</Text>
+              <View style={{ flexDirection: "row" }}>
+                <Text style={{ fontSize: 11 }}>
+                  Từ{" "}
+                  {price !== "0"
+                    ? this.caculatePrice(this.splitStr(price), 10)
+                    : this.splitStr(price)}k
+                </Text>
+                <Text style={{ color: "red", fontSize: 11 }}> -10%</Text>
+              </View>
             </TouchableOpacity>
           </Col>
         );
@@ -308,6 +355,7 @@ class SeatOverview extends Component {
   //   console.warn('ref==>',ref);
   // }
   render() {
+    console.log("state=>", this.state);
     let data = [];
     let response = this.props.configurationOverviewReducers;
     // console.log("getConfigurationOverview=>", getConfigurationOverview);
@@ -369,7 +417,7 @@ class SeatOverview extends Component {
           ) : null}
           {ListDates ? this.renderHeadTable(ListDates) : null}
         </Grid>
-        <Content style={{ flex: 1}}>
+        <Content style={{ flex: 1 }}>
           {data.length > 0 ? (
             this.renderDataGrid(data)
           ) : (
@@ -377,7 +425,7 @@ class SeatOverview extends Component {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                flex:1,
+                flex: 1
               }}
             >
               <Text>Nhà xe chưa mở bán</Text>
