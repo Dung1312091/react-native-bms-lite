@@ -1,6 +1,5 @@
 import React from "react";
 import { StyleSheet, Text, View } from "react-native";
-
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -18,11 +17,7 @@ const styles = StyleSheet.create({
 class Notification extends React.Component {
   componentWillMount() {}
   render() {
-    return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>NotificationScene</Text>
-      </View>
-    );
+    return <Text>Notification</Text>;
   }
 }
 

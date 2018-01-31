@@ -1,10 +1,11 @@
 import React, { Component } from "react";
-import { View, Text, TouchableHighlight, FlatList } from "react-native";
+import { View, Text, TouchableNativeFeedback, FlatList } from "react-native";
 import { Container, Header, Item, Grid, Col } from "native-base";
+
 // import { Dropdown } from 'react-native-material-dropdown';
 
 import { VxrInput } from "../../components/Input";
-import Dropdown from "../../components/Dropdown";
+import MyDropdown from "../../components/myDropDown";
 import DatePicker from "../../components/DatePicker";
 const listData = [
   [
@@ -128,10 +129,69 @@ const listData = [
     1
   ]
 ];
+class FlastListItem extends Component {
+  render() {
+    return (
+      <TouchableNativeFeedback
+        onPress={() => {
+          console.warn("a");
+        }}
+      >
+        <Grid
+          style={{
+            flex: 0,
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundColor: "#fff",
+            borderBottomColor: "#E1E1E1",
+            borderBottomWidth: 1
+          }}
+        >
+          <Col style={styles.colStyle}>
+            <Text style={styles.textStyle}>{this.props.data[0][0]}</Text>
+            <Text style={styles.textStyle}>{this.props.data[0][1]}</Text>
+            <Text style={styles.textStyle}>{this.props.data[0][2]}</Text>
+          </Col>
+          <Col style={styles.colStyle}>
+            <Text style={styles.textStyle}>{this.props.data[1]}</Text>
+            <Text>{this.props.data[2]}</Text>
+            <View style={{ flexDirection: "row" }}>
+              {/* {this.renderTicketCode(this.props.data[2])} */}
+              <Text>AA</Text>
+            </View>
+          </Col>
+          <Col style={styles.colStyle}>
+            <Text style={styles.textStyle}>{this.props.data[3]}</Text>
+          </Col>
+          <Col style={styles.colStyle}>
+            <Text style={styles.textStyle}>{this.props.data[4][0]}</Text>
+            <Text style={styles.textStyle}>{this.props.data[4][1]}</Text>
+            <Text
+              style={
+                this.props.data[5] === 1
+                  ? { color: "#2020FF" }
+                  : this.props.data[5] === 2
+                    ? { color: "#4DFF4D" }
+                    : { color: "red" }
+              }
+            >
+              {this.props.data[5] === 1
+                ? "Đặt chổ"
+                : this.props.data[4] === 2 ? "Thanh toán" : "Hủy"}
+            </Text>
+          </Col>
+        </Grid>
+      </TouchableNativeFeedback>
+    );
+  }
+}
 class TicketManagement extends Component {
-  constructor() {
-    super();
-    this.state = {};
+  // componentWillReceiveProps(nextProps) {
+  //   console.warn(this.props);
+  //   console.warn('qwqwq',nextProps);
+  // }
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
   }
   renderHeader = () => {
     const arrHeader = ["CHUYẾN", "Mã vé", "Tiền vé", "Ngày đặt"];
@@ -152,53 +212,6 @@ class TicketManagement extends Component {
         </Text>
       );
     });
-  };
-  renderContent = data => {
-    let id = Math.random();
-    return (
-      <Grid
-        style={{
-          flex: 0,
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "#fff",
-          borderBottomColor: "#E1E1E1",
-          borderBottomWidth: 1
-        }}
-        key={id}
-      >
-        <Col style={styles.colStyle}>
-          <Text style={styles.textStyle}>{data.item[0][0]}</Text>
-          <Text style={styles.textStyle}>{data.item[0][1]}</Text>
-          <Text style={styles.textStyle}>{data.item[0][2]}</Text>
-        </Col>
-        <Col style={styles.colStyle}>
-          <Text style={styles.textStyle}>{data.item[1]}</Text>
-          {/* <Text>{data.item[2]}</Text> */}
-          <View style={{ flexDirection: "row" }}>
-            {this.renderTicketCode(data.item[2])}
-          </View>
-        </Col>
-        <Col style={styles.colStyle}>
-          <Text style={styles.textStyle}>{data.item[3]}</Text>
-        </Col>
-        <Col style={styles.colStyle}>
-          <Text style={styles.textStyle}>{data.item[4][0]}</Text>
-          <Text style={styles.textStyle}>{data.item[4][1]}</Text>
-          <Text
-            style={
-              data.item[5] === 1
-                ? { color: "#2020FF" }
-                : data.item[5] === 2 ? { color: "#4DFF4D" } : { color: "red" }
-            }
-          >
-            {data.item[5] === 1
-              ? "Đặt chổ"
-              : data.item[4] === 2 ? "Thanh toán" : "Hủy"}
-          </Text>
-        </Col>
-      </Grid>
-    );
   };
   render() {
     const routeList = [
@@ -229,25 +242,18 @@ class TicketManagement extends Component {
         </Header>
         <Grid style={{ padding: "1%", flex: 0 }}>
           <Col style={{ margin: "1%", flex: 1 }}>
-            <Dropdown
-              data={routeList}
-              defaultIndex={1}
-              defaultValue={routeList[0]}
-            />
+            <MyDropdown data={routeList} onDropdownSelect={()=> {return null}} />
           </Col>
           <Col style={{ margin: "1%", flex: 1 }}>
-            <Dropdown
-              data={filterList}
-              defaultIndex={1}
-              defaultValue={filterList[0]}
-            />
+            <MyDropdown data={filterList} onDropdownSelect={()=> {return null}} />
           </Col>
         </Grid>
+        <View style={{ marginTop: 30 }} />
         <Grid style={{ padding: "1%", flex: 0 }}>
           <Col style={{ margin: "1%", flex: 1 }}>
             <DatePicker text="Từ ngày" />
           </Col>
-          <Col style={{ margin: "1%", flex: 1 }}>
+          <Col style={{ margin: "1%", flex: 1,  }}>
             <DatePicker text="Đến ngày" />
           </Col>
         </Grid>
@@ -265,7 +271,10 @@ class TicketManagement extends Component {
           </Grid>
           <FlatList
             data={listData}
-            renderItem={item => this.renderContent(item)}
+            keyExtractor={(item, index) => index}
+            renderItem={({ item, index }) => {
+              return <FlastListItem data={item} key={index} />;
+            }}
           />
         </View>
       </Container>
@@ -292,7 +301,7 @@ const styles = {
     alignItems: "center"
   },
   textStyle: {
-    fontSize: 13,
+    fontSize: 13
   }
 };
 

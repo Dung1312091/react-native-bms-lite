@@ -41,10 +41,10 @@ const styles = {
     paddingRight: 5,
     borderColor: "#d9d8dc",
     borderWidth: 1,
-    borderRightWidth: 0,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center"
+    justifyContent: "center",
+    borderRadius: 3
   },
   dateGroupItem: {
     marginLeft: 5,

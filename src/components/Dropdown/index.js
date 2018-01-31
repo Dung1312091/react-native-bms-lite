@@ -34,7 +34,6 @@ class Dropdown extends Component {
   }
 
   renderRow(rowData, rowID, highlighted) {
-    console.warn(rowData);
     return (
       <TouchableHighlight>
         <View

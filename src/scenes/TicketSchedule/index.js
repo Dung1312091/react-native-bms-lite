@@ -1,6 +1,6 @@
 import React from "react";
 import PropTypes from "prop-types";
-import { StyleSheet } from "react-native";
+import { StyleSheet, View } from "react-native";
 import ActionSheet from "../../containers/ActionSheetSeat";
 import {
   Container,
@@ -19,6 +19,7 @@ import DateRangePicker from "../../components/DateRangePicker";
 import SeatOverview from "../../containers/SeatOverview";
 // import Dropdown from "../../components/Dropdown";
 import DropdownTrip from "../../containers/DropdownTrip";
+//import MyDropDown from "../../components/myDropDown/index";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -76,14 +77,21 @@ class TicketScheduleScene extends React.Component {
             </Button>
           </Right>
         </Header>
-        <Grid style={{ padding: "1%", flex: 0 }}>
+        <Grid style={{ height: 50, flex: 0, padding: "1%" }}>
           <Col style={{ margin: "1%", flex: 1 }}>
             <DropdownTrip />
           </Col>
-          <Col style={{ margin: "1%", flex: 1 }}>
+          <Col
+            style={{
+              margin: "1%",
+              flex: 1,
+              height: 42
+            }}
+          >
             <DateRangePicker />
           </Col>
         </Grid>
+        <View style={{ marginTop: 5 }} />
         <SeatOverview openModel={this.onpenActionSheet} />
         <ActionSheet
           ref={ref => {

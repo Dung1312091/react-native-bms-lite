@@ -2,6 +2,8 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 // import Spinner from "react-native-spinkit";
+import { Keyboard, TouchableWithoutFeedback } from "react-native";
+import dismissKeyboard from "react-native/Libraries/Utilities/dismissKeyboard";
 import Loading from "../../components/Loading";
 import { connect } from "react-redux";
 import {
@@ -108,6 +110,7 @@ class Login extends Component {
       animate: true,
       isLoading: true
     });
+    Keyboard.dismiss();
   };
   componentWillReceiveProps(nextProps) {
     if (!nextProps.responeLogin.isAuthentication) {
@@ -132,65 +135,69 @@ class Login extends Component {
     let animateLoading = isLoading ? <Loading color="#ffffff" /> : null;
     return (
       <Container>
-        <View style={styles.container}>
-          {animateLoading}
-          <View style={styles.logoCompany}>
-            <Image
-              style={{ width: 263, height: 59 }}
-              source={require("../../images/logo.png")}
-            />
-          </View>
-          <View
-            style={[
-              styles.loginErr,
-              loginFail ? { backgroundColor: "#BAD2E8" } : {}
-            ]}
-          >
-            {loginErr}
-          </View>
-          <View>
-            <View style={styles.SectionStyle}>
-              <View style={styles.inputLogin}>
-                <Image
-                  source={require("../../images/user.png")}
-                  style={styles.ImageStyle}
-                />
-                <TextInput
-                  style={styles.inputSearch}
-                  placeholder="Tài khoản"
-                  underlineColorAndroid="transparent"
-                  keyboardType="email-address"
-                  name="username"
-                  value={username}
-                  onChangeText={text => this.setState({ username: text })}
-                />
+        <TouchableWithoutFeedback style={{ flex: 1 }} onPress={dismissKeyboard}>
+          <View style={styles.container}>
+            {animateLoading}
+            <View style={styles.logoCompany}>
+              <Image
+                style={{ width: 263, height: 59 }}
+                source={require("../../images/logo.png")}
+              />
+            </View>
+            <View
+              style={[
+                styles.loginErr,
+                loginFail ? { backgroundColor: "#BAD2E8" } : {}
+              ]}
+            >
+              {loginErr}
+            </View>
+            <View>
+              <View style={styles.SectionStyle}>
+                <View style={styles.inputLogin}>
+                  <Image
+                    source={require("../../images/user.png")}
+                    style={styles.ImageStyle}
+                  />
+                  <TextInput
+                    style={styles.inputSearch}
+                    placeholder="Tài khoản"
+                    underlineColorAndroid="transparent"
+                    keyboardType="email-address"
+                    name="username"
+                    value={username}
+                    onChangeText={text => this.setState({ username: text })}
+                    onSubmitEditing={Keyboard.dismiss}
+                  />
+                </View>
               </View>
-            </View>
-            <View style={styles.SectionStyle}>
-              <View style={styles.inputLogin}>
-                <Image
-                  source={require("../../images/pass.png")}
-                  style={styles.ImageStyle}
-                />
-                <TextInput
-                  style={styles.inputSearch}
-                  placeholder="Mật khẩu"
-                  underlineColorAndroid="transparent"
-                  secureTextEntry={true}
-                  name="password"
-                  value={password}
-                  onChangeText={text => this.setState({ password: text })}
-                />
+              <View style={styles.SectionStyle}>
+                <View style={styles.inputLogin}>
+                  <Image
+                    source={require("../../images/pass.png")}
+                    style={styles.ImageStyle}
+                  />
+                  <TextInput
+                    style={styles.inputSearch}
+                    placeholder="Mật khẩu"
+                    underlineColorAndroid="transparent"
+                    secureTextEntry={true}
+                    name="password"
+                    value={password}
+                    onChangeText={text => this.setState({ password: text })}
+                    onSubmitEditing={this.Login}
+                  />
+                </View>
               </View>
+              <View style={styles.SectionStyle}>
+                <TouchableOpacity style={styles.Login} onPress={this.Login}>
+                  <Text>Đăng nhập</Text>
+                </TouchableOpacity>
+              </View>
+              {/* {loading} */}
             </View>
-            <View style={styles.SectionStyle}>
-              <TouchableOpacity style={styles.Login} onPress={this.Login}>
-                <Text>Đăng nhập</Text>
-              </TouchableOpacity>
-            </View>
-            {/* {loading} */}
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Container>
     );
   }

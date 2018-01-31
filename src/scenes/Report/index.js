@@ -11,7 +11,7 @@ import {
   Title
 } from "native-base";
 // import { Dropdown } from 'react-native-material-dropdown';
-import Dropdown from "../../components/Dropdown";
+import MyDropdown from "../../components/myDropDown";
 import DatePicker from "../../components/DatePicker";
 const listData = [
   ["1", "VH2S927", "320000", ["320000", "10"], "320000"],
@@ -29,6 +29,9 @@ class Report extends Component {
   constructor() {
     super();
     this.state = {};
+  }
+  shouldComponentUpdate(nextProps, nextState) {
+    return false;
   }
   renderHeader = () => {
     const arrHeader = ["STT", "Mã vé", "Tiền vé", "Chiết khấu", "Vexere thu"];
@@ -103,13 +106,15 @@ class Report extends Component {
         </Header>
         <View style={{ alignItems: "center", marginTop: 10 }}>
           <View style={{ width: "90%" }}>
-            <Dropdown
+            <MyDropdown
               data={routeList}
-              defaultIndex={1}
-              defaultValue={routeList[0]}
+              onDropdownSelect={() => {
+                return null;
+              }}
             />
           </View>
         </View>
+        <View style={{ marginTop: 35 }} />
         <Grid style={{ padding: "1%", flex: 0 }}>
           <Col style={{ margin: "1%", flex: 1 }}>
             <DatePicker text="Từ ngày" />
@@ -133,6 +138,7 @@ class Report extends Component {
           <FlatList
             data={listData}
             renderItem={item => this.renderContent(item)}
+            keyExtractor={(item, index) => index}
           />
         </View>
         <Grid

@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { Content, Text, Grid, Col } from "native-base";
-import { TouchableOpacity, View } from "react-native";
+import { TouchableOpacity, View, Alert } from "react-native";
 import ActionSheet from "react-native-actionsheet";
 import { connect } from "react-redux";
 import moment from "moment";
@@ -65,7 +65,7 @@ class SeatOverview extends Component {
       groups: "selling_configs,fare_configs,statistic",
       start: true
     };
-    console.log("param=>", params);
+
     this.props.getConfigurationOverview(params);
     // try {
     //   AsyncStorage.getItem(ROUTE).then(value => {
@@ -172,10 +172,9 @@ class SeatOverview extends Component {
           trip.configCustom.selling_configs.selling_configs[2]
         ) {
           total = trip.configCustom.selling_configs.selling_configs[2].total;
-          // booking = trip.configCustom.statistic
-          //   ? trip.configCustom.statistic
-          //   : null;
         }
+        if (trip.configCustom.statistic && trip.configCustom.statistic.booked)
+          booking = +trip.configCustom.statistic.booked;
       }
       let id = i + Math.random(); // trip.id
       if (trip.isShow) {
@@ -195,11 +194,11 @@ class SeatOverview extends Component {
               <View
                 style={[
                   seatOccupancyStyle,
-                  SeatOverview.calculateSeatStyle(6, total)
+                  SeatOverview.calculateSeatStyle(booking, total)
                 ]}
               />
               <Text style={columnTextStyle}>
-                {booking}/{total} chỗ123
+                {booking}/{total} chỗ
               </Text>
               <Text style={columnTextStyle}>Từ 200k -20%</Text>
             </TouchableOpacity>
@@ -214,9 +213,12 @@ class SeatOverview extends Component {
                 height: "100%",
                 alignItems: "center",
                 justifyContent: "center",
-                backgroundColor: "red",
+                // backgroundColor: "red",
                 borderBottomWidth: 1,
                 borderColor: "#d9d8dc"
+              }}
+              onPress={() => {
+                Alert.alert("Hello anh Ẹp Chai!!!");
               }}
             />
           </Col>
@@ -251,7 +253,6 @@ class SeatOverview extends Component {
     return result.sort();
   };
   setUpAllDataToRender = (times, dates) => {
-    console.log("dates=>", dates);
     let result = [];
     times.forEach(time => {
       let data = [];
@@ -368,7 +369,7 @@ class SeatOverview extends Component {
           ) : null}
           {ListDates ? this.renderHeadTable(ListDates) : null}
         </Grid>
-        <Content>
+        <Content style={{ flex: 1}}>
           {data.length > 0 ? (
             this.renderDataGrid(data)
           ) : (
@@ -376,8 +377,7 @@ class SeatOverview extends Component {
               style={{
                 justifyContent: "center",
                 alignItems: "center",
-                flex: 1,
-                justifyContent: "center"
+                flex:1,
               }}
             >
               <Text>Nhà xe chưa mở bán</Text>
