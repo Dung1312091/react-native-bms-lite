@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { View, Text, TouchableNativeFeedback, FlatList } from "react-native";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { Container, Header, Item, Grid, Col } from "native-base";
 
 // import { Dropdown } from 'react-native-material-dropdown';
@@ -132,7 +132,7 @@ const listData = [
 class FlastListItem extends Component {
   render() {
     return (
-      <TouchableNativeFeedback
+      <TouchableOpacity
         onPress={() => {
           console.warn("a");
         }}
@@ -181,7 +181,7 @@ class FlastListItem extends Component {
             </Text>
           </Col>
         </Grid>
-      </TouchableNativeFeedback>
+      </TouchableOpacity>
     );
   }
 }
@@ -242,10 +242,20 @@ class TicketManagement extends Component {
         </Header>
         <Grid style={{ padding: "1%", flex: 0 }}>
           <Col style={{ margin: "1%", flex: 1 }}>
-            <MyDropdown data={routeList} onDropdownSelect={()=> {return null}} />
+            <MyDropdown
+              data={routeList}
+              onDropdownSelect={() => {
+                return null;
+              }}
+            />
           </Col>
           <Col style={{ margin: "1%", flex: 1 }}>
-            <MyDropdown data={filterList} onDropdownSelect={()=> {return null}} />
+            <MyDropdown
+              data={filterList}
+              onDropdownSelect={() => {
+                return null;
+              }}
+            />
           </Col>
         </Grid>
         <View style={{ marginTop: 30 }} />
@@ -253,7 +263,7 @@ class TicketManagement extends Component {
           <Col style={{ margin: "1%", flex: 1 }}>
             <DatePicker text="Từ ngày" />
           </Col>
-          <Col style={{ margin: "1%", flex: 1,  }}>
+          <Col style={{ margin: "1%", flex: 1 }}>
             <DatePicker text="Đến ngày" />
           </Col>
         </Grid>

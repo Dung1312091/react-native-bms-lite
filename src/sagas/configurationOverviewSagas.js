@@ -4,10 +4,14 @@ import {
   GET_CONFIGURATION_OVWERVIEW_FAIL
 } from "../constants/actionTypes";
 import { Api } from "../api/login";
+import { storeToken } from "../utils/AsyncStorage";
+const PARAM = "param";
 //Saga effects
 import { put, takeLatest } from "redux-saga/effects";
 function* getConfigurationOverviewSagas(action) {
   try {
+    yield storeToken(PARAM, JSON.stringify(action.params));
+    console.warn("test", action);
     const response = yield Api.CallAPI(
       "https://api-sandbox.vexere.com/v1/",
       "configuration_overview",
@@ -15,6 +19,7 @@ function* getConfigurationOverviewSagas(action) {
       action.params
     );
     if (response.status === 200) {
+      console.warn("ahihihihih");
       let data = JSON.parse(response._bodyInit);
       yield put({ type: GET_CONFIGURATION_OVWERVIEW_SUCCESS, data: data });
     }

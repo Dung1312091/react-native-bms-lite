@@ -3,7 +3,10 @@ import PropTypes from "prop-types";
 import Seat from "../../components/Seat";
 import { Text, StyleSheet, View } from "react-native";
 import { connect } from "react-redux";
+import moment from "moment";
+import { changeSeatOnline } from "./actions";
 import { Actions } from "react-native-router-flux";
+import Loading from "../../components/Loading";
 import {
   Container,
   Body,
@@ -15,13 +18,17 @@ import {
   Content,
   Tabs,
   Tab,
-  Grid
+  Grid,
+  CheckBox
 } from "native-base";
 class SeatDiagram extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      data: []
+      data: [],
+      check: false,
+      isShowButton: false,
+      listSelectItem: []
     };
   }
   buildString = (lable, coach, row, col, id) => {
@@ -102,7 +109,8 @@ class SeatDiagram extends React.Component {
         _row: itemRow,
         _col: itemCol,
         _isOnline: isOnline,
-        _isPaymentStatus: paymentStatus
+        _isPaymentStatus: paymentStatus,
+        _seatDiagramId: seatDiagram[0]
       });
     }
     // console.log("tmpSeats=>", tmpSeats);
@@ -130,7 +138,8 @@ class SeatDiagram extends React.Component {
               _row: a,
               _col: b,
               _isOnline: items[0]._isOnline,
-              _isPaymentStatus: items[0]._isPaymentStatus
+              _isPaymentStatus: items[0]._isPaymentStatus,
+              _seatDiagramId: items[0]._seatDiagramId
             };
           } else {
             result[c - 1][a - 1][b - 1] = {};
@@ -141,11 +150,8 @@ class SeatDiagram extends React.Component {
     console.log("result=>", result);
     return result;
   };
-  componentWillMount() {
-    console.log(
-      " this.props.seatOverviewReducers1==>",
-      this.props.seatOverviewReducers
-    );
+  componentDidMount() {
+    console.warn("xxx");
     let ticketInfo = this.props.seatOverviewReducers.ticketInfo.data.tickets;
     let tripDetail = this.props.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
       "~"
@@ -161,7 +167,41 @@ class SeatDiagram extends React.Component {
   }
   back = () => {
     Actions.pop();
-  }
+  };
+  selectSeat = (data, isShow) => {
+    this.state.listSelectItem.push(data);
+    if (isShow) {
+      this.setState({
+        isShowButton: true
+      });
+    }
+  };
+  unSelectSeat = data => {
+    if (data._isOnline) {
+      this.setState({
+        isShowButton: true
+      });
+      let index = this.state.listSelectItem.findIndex(
+        x => x._label === data._label
+      );
+      if (index > -1) {
+        this.state.listSelectItem.splice(index, 1);
+      }
+    }
+    // else {
+    //   let index = this.state.listSelectItem.findIndex(
+    //     x => x._label === data._label
+    //   );
+    //   if (index > -1) {
+    //     this.state.listSelectItem.splice(index, 1);
+    //   }
+    //   if (this.state.listSelectItem.length === 0) {
+    //     this.setState({
+    //       isShowButton: false
+    //     });
+    //   }
+    // }
+  };
   componentWillReceiveProps(nextProps) {
     console.log(
       " this.props.seatOverviewReducers2==>",
@@ -185,14 +225,58 @@ class SeatDiagram extends React.Component {
       });
     }
   }
+  check = () => {
+    this.setState({
+      check: !this.state.check
+    });
+  };
+  buildDataUpdateSeatOnline = data => {
+    let str = `2~${data.length}~`;
+    data.forEach((item, index) => {
+      str += `${item._label}|${item._coach}|${item._row}|${item._col}|${
+        item._seatDiagramId
+      }`;
+      str += index === data.length - 1 ? "" : "~";
+    });
+    return str;
+  };
+  changeSeatOnline = () => {
+    // console.log("ahihi", this.props.trip);
+    let trip = this.props.trip;
+    let selling_configs = trip.configCustom.selling_configs.selling_configs[2];
+    // console.warn("selling_configs.prior", trip);
+    let info = this.buildDataUpdateSeatOnline(this.state.listSelectItem);
+    // console.warn("rs==>", info);
+    let params = {
+      from_date: moment(trip.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      info: info,
+      is_priority: this.state.check ? 2 : selling_configs.prior,
+      status: 1,
+      stop_points: selling_configs.stop_points,
+      time_limit: selling_configs.time_limit,
+      times: trip.time,
+      to_date: moment(trip.date, "YYYY-MM-DD").format("DD-MM-YYYY"),
+      trip_id: this.props.changeRouteReducers.value[0],
+      type: 2
+    };
+    this.props.changeSeatOnline(params);
+    // console.warn("param--", params);
+  };
   renderSeat = seatNumber => {
     return seatNumber.map((item, index) => {
-      return <Seat key={index} item={item} />;
+      return (
+        <Seat
+          key={index}
+          item={item}
+          selectSeat={this.selectSeat}
+          unSelectSeat={this.unSelectSeat}
+        />
+      );
     });
   };
   renderSeatMap = arr => {
     return arr.map((item, index) => {
-      let gridStyle = index === 0 ? { marginTop: 5 } : { marginTop: -10 };
+      let gridStyle = index === 0 ? { marginTop: 4 } : null;
       return (
         <Grid key={index} style={[{ backgroundColor: "#EFEFEF" }, gridStyle]}>
           {this.renderSeat(item)}
@@ -202,6 +286,7 @@ class SeatDiagram extends React.Component {
   };
   render() {
     let { data } = this.state;
+    console.warn("data", this.state.data);
     return (
       <Container style={{ backgroundColor: "#EFEFEF" }}>
         <Header style={styles.headerStyle}>
@@ -220,63 +305,151 @@ class SeatDiagram extends React.Component {
         <View style={{ alignItems: "center" }}>
           <Text>THAY ĐỔI CHỖ BÁN ONLINE</Text>
         </View>
-        <Tabs initialPage={0} style={{ backgroundColor: "#EFEFEF" }}>
-          <Tab heading="Tầng 1" style={styles.tabHeader}>
-            <Content>
+        {this.state.data.length < 1 ? (
+          <Loading />
+        ) : (
+          <View style={{ flex: 1 }}>
+            <View style={{ flex: 4 }}>
+              <Tabs initialPage={0} style={{ backgroundColor: "#EFEFEF" }}>
+                <Tab heading="Tầng 1" style={styles.tabHeader}>
+                  <Content>
+                    <View
+                      style={{
+                        marginLeft: 50,
+                        marginRight: 50,
+                        backgroundColor: "#EFEFEF"
+                      }}
+                    >
+                      {this.renderSeatMap(data[0])}
+                    </View>
+                  </Content>
+                </Tab>
+                <Tab heading="Tầng 2" style={styles.tabHeader}>
+                  <Content style={{ marginLeft: 50, marginRight: 50 }}>
+                    {data.length > 1 ? this.renderSeatMap(data[1]) : null}
+                  </Content>
+                </Tab>
+              </Tabs>
+            </View>
+            <View style={{ flex: 1 }}>
               <View
                 style={{
-                  marginLeft: 50,
-                  marginRight: 50,
-                  backgroundColor: "#EFEFEF"
+                  justifyContent: "center",
+                  alignItems: "center",
+                  marginTop: -10
                 }}
               >
-                {this.renderSeatMap(data[0])}
+                <View
+                  style={{ alignItems: "center", justifyContent: "center" }}
+                >
+                  <Text style={{ color: "#1B291F" }}>TỔNG 8 CHỖ</Text>
+                  <Text> (chạm vào 1 ghế để tắt hoặc mở ghế bán online)</Text>
+                </View>
               </View>
-            </Content>
-          </Tab>
-          <Tab heading="Tầng 2" style={styles.tabHeader}>
-            <Content style={{ marginLeft: 50, marginRight: 50 }}>
-              {data.length > 1 ? this.renderSeatMap(data[1]) : null}
-            </Content>
-          </Tab>
-        </Tabs>
-        <View
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            marginTop: 10
-          }}
-        >
-          <Text style={{ color: "#1B291F" }}>TỔNG CHỖ BÁN ONLINE: 8 chỗ</Text>
-          <Text>(chạm vào 1 ghế để tắt hoặc mở ghế bán online)</Text>
-        </View>
-        <View
-          style={{
-            flexDirection: "row",
-            justifyContent: "space-between",
-            marginLeft: 10,
-            marginRight: 10
-          }}
-        >
-          <View style={{ flexDirection: "row" }}>
-            <View
-              style={{ width: 20, height: 20, backgroundColor: "#FAADD3" }}
-            />
-            <Text style={{ color: "#1B2529", marginLeft: 3 }}>Ghế đặt chỗ</Text>
+              <View
+                style={{
+                  flexDirection: "column",
+                  marginTop: 8,
+                  marginBottom: 3,
+                  shadowColor: "#D9D9D9"
+                  // height: "100%"
+                }}
+              >
+                <View style={{ flexDirection: "row" }}>
+                  <CheckBox checked={this.state.check} onPress={this.check} />
+                  <Text style={{ marginLeft: 15 }}>
+                    Cấu hình riêng (private)
+                  </Text>
+                </View>
+              </View>
+              <View
+                style={{
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  marginLeft: 10,
+                  marginRight: 10,
+                  marginTop: 5
+                }}
+              >
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <View
+                    style={{
+                      width: 15,
+                      height: 15,
+                      backgroundColor: "#FAADD3",
+                      borderRadius: 2
+                    }}
+                  />
+                  <Text style={{ color: "#1B2529", marginLeft: 3 }}>
+                    Ghế đặt chỗ
+                  </Text>
+                </View>
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <View
+                    style={{
+                      width: 15,
+                      height: 15,
+                      backgroundColor: "#FAF87D",
+                      borderRadius: 2
+                    }}
+                  />
+                  <Text style={{ color: "#1B2529", marginLeft: 3 }}>
+                    Ghế thanh toán
+                  </Text>
+                </View>
+                <View
+                  style={{ flexDirection: "row", justifyContent: "center" }}
+                >
+                  <View
+                    style={{
+                      width: 15,
+                      height: 15,
+                      backgroundColor: "#007AFF",
+                      borderRadius: 2
+                    }}
+                  />
+                  <Text style={{ color: "#1B2529", marginLeft: 3 }}>
+                    Ghế bán online
+                  </Text>
+                </View>
+                {this.state.isShowButton ? (
+                  <View
+                    style={[
+                      {
+                        width: "100%",
+                        // marginTop: 3,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row",
+                        position: "absolute",
+                        top: -5,
+                        right: 0,
+                        bottom: 0,
+                        left: 0
+                      }
+                    ]}
+                  >
+                    <Button
+                      style={{
+                        width: "99%",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        borderRadius: 3
+                      }}
+                      onPress={this.changeSeatOnline}
+                    >
+                      <Text>Lưu</Text>
+                    </Button>
+                  </View>
+                ) : null}
+              </View>
+            </View>
           </View>
-          <View style={{ flexDirection: "row" }}>
-            <View
-              style={{ width: 20, height: 20, backgroundColor: "#FAF87D" }}
-            />
-            <Text style={{ color: "#1B2529", marginLeft: 3 }}>Ghế đặt chỗ</Text>
-          </View>
-          <View style={{ flexDirection: "row" }}>
-            <View
-              style={{ width: 20, height: 20, backgroundColor: "#007AFF" }}
-            />
-            <Text style={{ color: "#1B2529", marginLeft: 3 }}>Ghế đặt chỗ</Text>
-          </View>
-        </View>
+        )}
       </Container>
     );
   }
@@ -307,6 +480,9 @@ const styles = StyleSheet.create({
   tabHeader: {
     height: 50,
     backgroundColor: "#EFEFEF"
+  },
+  displayView: {
+    display: "none"
   }
 });
 SeatDiagram.propTypes = {
@@ -319,11 +495,12 @@ const mapStateToProps = state => {
     seatOverviewReducers: state.seatOverviewReducers
   };
 };
-// const mapDispatchToProps = dispatch => {
-//   return {
-//     getConfigurationOverview: params => {
-//       dispatch(getConfigurationOverview(params));
-//     }
-//   };
+const mapDispatchToProps = dispatch => {
+  return {
+    changeSeatOnline: params => {
+      dispatch(changeSeatOnline(params));
+    }
+  };
+};
 
-export default connect(mapStateToProps, null)(SeatDiagram);
+export default connect(mapStateToProps, mapDispatchToProps)(SeatDiagram);

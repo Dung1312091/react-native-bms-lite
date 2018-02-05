@@ -5,12 +5,14 @@ import getConfigurationOverview from "./configurationOverview";
 import changeRouteReducer from "../containers/DropdownTrip/reducer";
 import selectTripReducer from "./tripDetail";
 import seatOverviewReducers from "../containers/SeatOverview/reducers";
+import seatDiagramReducers from "../scenes/SeatDiagram/reducer";
 const allReducers = combineReducers({
   loginReducers,
   getDayReducers,
   getConfigurationOverview,
   changeRouteReducer,
   selectTripReducer,
-  seatOverviewReducers
+  seatOverviewReducers,
+  seatDiagramReducers
 });
 export default allReducers;

@@ -26,22 +26,23 @@ class SeatOverview extends Component {
     this.state = {
       selected: "",
       fromAreaId: "",
-      toAreaId: ""
+      toAreaId: "",
+      tempData: {}
     };
   }
-  static calculateSeatStyle(bookedQty, totalQty) {
+  static calculateSeatStyle(bookedQty, totalQty, type) {
     const style = {
       backgroundColor: "red",
       width: "50%"
     };
     const w = totalQty > 0 ? Math.round(bookedQty / totalQty * 100) : 0;
 
-    if (w >= 80) {
-      style.backgroundColor = "#b6ffea"; // xanh
-    } else if (w >= 50) {
-      style.backgroundColor = "#ffeb96"; // vàng
-    } else {
-      style.backgroundColor = "#ffc2c2"; // đỏ
+    if (type === 2) {
+      style.backgroundColor = "#b6ffea"; // xanh + thanh toán
+    } else if (type === 3) {
+      style.backgroundColor = "#ffeb96"; // vàng + đặt chỗ và thanh toán
+    } else if (type === 1) {
+      style.backgroundColor = "#ffc2c2"; // đỏ + đặt chỗ
     }
 
     style.width = `${w.toString()}%`;
@@ -71,7 +72,8 @@ class SeatOverview extends Component {
     this.props.getConfigurationOverview(params);
     this.setState({
       fromAreaId: trip.data[0][7].split("|")[0],
-      toAreaId: trip.data[0][8].split("|")[0]
+      toAreaId: trip.data[0][8].split("|")[0],
+      tempData: params
     });
     // try {
     //   AsyncStorage.getItem(ROUTE).then(value => {
@@ -96,6 +98,10 @@ class SeatOverview extends Component {
   componentWillReceiveProps(nextProps) {
     console.log("this.props", this.props);
     console.log("nextProps", nextProps);
+    // if (nextProps.seatDiagramReducers.updateSeatSuccess) {
+    //   this.props.getConfigurationOverview(this.state.tempData);
+    //   console.warn("hihiih");
+    // }
   }
   onPress = () => {
     this.setState(previousState => {
@@ -165,54 +171,85 @@ class SeatOverview extends Component {
   caculatePrice = (price, discount) => {
     return +price - +price * discount / 100;
   };
+  formatPriceAndPromotion = fare_configs => {
+    let configs = {};
+    if (fare_configs.fare_info) {
+      let fare_info = fare_configs.fare_info.split("~");
+      let str = `${this.state.fromAreaId}|${this.state.toAreaId}`;
+      let fareArr = this.findConfigsFare(fare_info, str);
+      if (fareArr) {
+        let item = fareArr.split("||");
+        let res1 = null;
+        let res2 = null;
+        if (item.length > 1 && item[1] !== "") {
+          res1 = item[1].split("|");
+        } else {
+          res2 = item[0].split("|");
+        }
+        let kq1 = [];
+        let kq2 = null;
+        if (res1) {
+          res1.forEach(item => {
+            let temp = item.split(":");
+            kq1.push(temp[1]);
+          });
+          kq1.sort();
+        } else {
+          kq2 = res2[2];
+        }
+        configs.price = kq1[0] ? kq1[0] : kq2 ? kq2 : "0";
+      }
+    }
+    if (fare_configs.promotion_fare_price) {
+      configs.promotion_fare_price = fare_configs.promotion_fare_price;
+    }
+    if (fare_configs.promotion_type && +fare_configs.promotion_type === 3) {
+      configs.promotion_type = "%";
+    }
+    return configs;
+  };
   renderSeat(data) {
     const { columnStyle, columnTextStyle, seatOccupancyStyle } = styles;
     let total = 0;
-    let booking = 0;
+    let totalBooking = 0;
     let price = 0;
+    let promotion_fare_price = null;
+    let promotion_type = "";
+    let type = 0;
     return data.map((trip, i) => {
       if (trip && trip.configCustom) {
+        console.log("trip.configCustom=>", trip.configCustom);
         if (
           trip.configCustom.selling_configs &&
           trip.configCustom.selling_configs.selling_configs[2]
         ) {
           total = trip.configCustom.selling_configs.selling_configs[2].total;
         }
-        if (trip.configCustom.statistic && trip.configCustom.statistic.booked)
-          booking = +trip.configCustom.statistic.booked;
+        if (trip.configCustom.statistic) {
+          if (trip.configCustom.statistic.booked) {
+            totalBooking = +trip.configCustom.statistic.booked;
+            type = 1;
+          }
+          if (trip.configCustom.statistic.paid) {
+            totalBooking = +totalBooking + +trip.configCustom.statistic.paid;
+            type = 2;
+          }
+          if (
+            trip.configCustom.statistic.booked &&
+            trip.configCustom.statistic.paid
+          )
+            type = 3;
+        }
         let fare_configs = trip.configCustom.fare_configs;
         if (fare_configs) {
-          console.log("qqqq");
-          if (fare_configs.fare_info) {
-            let fare_info = fare_configs.fare_info.split("~");
-            let str = `${this.state.fromAreaId}|${this.state.toAreaId}`;
-            let fareArr = this.findConfigsFare(fare_info, str);
-            if (fareArr) {
-              let item = fareArr.split("||");
-              console.log("item=>", fareArr);
-              let res1 = null;
-              let res2 = null;
-              if (item.length > 1 && item[1] !== "") {
-                res1 = item[1].split("|");
-              } else {
-                res2 = item[0].split("|");
-              }
-              let kq1 = [];
-              let kq2 = null;
-              // console.log("res=>", res);
-              if (res1) {
-                res1.forEach(item => {
-                  let temp = item.split(":");
-                  kq1.push(temp[1]);
-                });
-                kq1.sort();
-              } else {
-                kq2 = res2[2];
-              }
-              price = kq1[0] ? kq1[0] : kq2 ? kq2 : "0";
-              // console.log("res=>", kq);
-            }
-          }
+          let configs = this.formatPriceAndPromotion(fare_configs);
+          price = configs.price ? configs.price : price;
+          promotion_fare_price = configs.promotion_fare_price
+            ? configs.promotion_fare_price
+            : promotion_fare_price;
+          promotion_type = configs.promotion_type
+            ? configs.promotion_type
+            : promotion_type;
         }
       }
       let id = i + Math.random(); // trip.id
@@ -225,7 +262,6 @@ class SeatOverview extends Component {
                 height: "100%",
                 alignItems: "center",
                 justifyContent: "center",
-                borderBottomWidth: 1,
                 borderColor: "#d9d8dc"
               }}
               onPress={() => this.showActionSheet(trip)}
@@ -233,20 +269,27 @@ class SeatOverview extends Component {
               <View
                 style={[
                   seatOccupancyStyle,
-                  SeatOverview.calculateSeatStyle(booking, total)
+                  SeatOverview.calculateSeatStyle(totalBooking, total, type)
                 ]}
               />
               <Text style={{ fontSize: 12 }}>
-                {booking}/{total} chỗ
+                {totalBooking}/{total} chỗ
               </Text>
               <View style={{ flexDirection: "row" }}>
                 <Text style={{ fontSize: 11 }}>
                   Từ{" "}
                   {price !== "0"
-                    ? this.caculatePrice(this.splitStr(price), 10)
+                    ? this.caculatePrice(
+                        this.splitStr(price),
+                        +promotion_fare_price
+                      )
                     : this.splitStr(price)}k
                 </Text>
-                <Text style={{ color: "red", fontSize: 11 }}> -10%</Text>
+                <Text style={{ color: "red", fontSize: 11 }}>
+                  {promotion_fare_price
+                    ? ` -${promotion_fare_price}${promotion_type}`
+                    : ""}
+                </Text>
               </View>
             </TouchableOpacity>
           </Col>
@@ -260,8 +303,6 @@ class SeatOverview extends Component {
                 height: "100%",
                 alignItems: "center",
                 justifyContent: "center",
-                // backgroundColor: "red",
-                borderBottomWidth: 1,
                 borderColor: "#d9d8dc"
               }}
               onPress={() => {
@@ -355,7 +396,7 @@ class SeatOverview extends Component {
   //   console.warn('ref==>',ref);
   // }
   render() {
-    console.log("state=>", this.state);
+    console.warn("render=>");
     let data = [];
     let response = this.props.configurationOverviewReducers;
     // console.log("getConfigurationOverview=>", getConfigurationOverview);
@@ -409,7 +450,7 @@ class SeatOverview extends Component {
         {this.props.configurationOverviewReducers.isLoading ? (
           <Loading color="#ffffff" />
         ) : null}
-        <Grid style={tableStyle}>
+        <Grid style={[tableStyle, { backgroundColor: "#ECECEC" }]}>
           {dates ? (
             <Col style={columnHeader}>
               <Text style={headerTextStyle}>CHUYẾN</Text>
@@ -446,7 +487,8 @@ class SeatOverview extends Component {
 
 const styles = {
   containerStyle: {
-    flex: 1
+    flex: 1,
+    backgroundColor: "#fff"
   },
   tableStyle: {
     flex: 0
@@ -456,7 +498,6 @@ const styles = {
     padding: 10,
     borderBottomWidth: 1,
     borderColor: "#d9d8dc",
-    backgroundColor: "#f9f9f9",
     justifyContent: "center",
     alignItems: "center"
   },
@@ -551,15 +592,16 @@ SeatOverview.propTypes = {
   selectDay: PropTypes.any,
   loginReducers: PropTypes.any,
   getConfigurationOverview: PropTypes.any,
-  changeRouteReducers: PropTypes.any
+  changeRouteReducers: PropTypes.any,
+  seatDiagramReducers: PropTypes.any
 };
 const mapStateToProps = state => {
   return {
     loginReducers: state.loginReducers,
     dayReducers: state.getDayReducers,
     configurationOverviewReducers: state.getConfigurationOverview,
-    changeRouteReducers: state.changeRouteReducer
-    // selectTripReducer: state.selectTripReducer,
+    changeRouteReducers: state.changeRouteReducer,
+    seatDiagramReducers: state.seatDiagramReducers
     // seatOverviewReducers: state.seatOverviewReducers
   };
 };

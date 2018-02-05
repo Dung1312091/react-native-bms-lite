@@ -1,4 +1,4 @@
-import { urlLogin } from "../constants/urlApi";
+import { onlineSeatUrl, urlLogin } from "../constants/urlApi";
 
 function* Login(account) {
   const response = yield fetch(urlLogin, {
@@ -11,6 +11,29 @@ function* Login(account) {
       username: account.username,
       password: account.password,
       grant_type: "password"
+    })
+  });
+  return response;
+}
+function* apiChangeSeatOnline(data, token) {
+  const response = yield fetch(onlineSeatUrl, {
+    method: "POST",
+    headers: {
+      accept: "application/json",
+      Authorization: `Bearer ${token}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      from_date: data.from_date,
+      info: data.info,
+      is_priority: data.is_priority,
+      status: data.status,
+      stop_points: data.stop_points,
+      time_limit: data.time_limit,
+      times: data.times,
+      to_date: data.to_date,
+      trip_id: data.trip_id,
+      type: data.type
     })
   });
   return response;
@@ -48,5 +71,6 @@ function* CallAPI(BASE_URL, path, method, params) {
 
 export const Api = {
   Login,
-  CallAPI
+  CallAPI,
+  apiChangeSeatOnline
 };

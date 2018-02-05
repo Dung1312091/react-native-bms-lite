@@ -29,7 +29,7 @@ class RunAppScene extends Component {
   componentWillMount() {
     let date = this.props.dayReducers;
     this.props.Authentication(date);
-    // deleteToken(ACCESS_TOKEN);
+    //deleteToken(ACCESS_TOKEN);
   }
   componentWillReceiveProps(nextProps) {
     if (!nextProps.loginReducers.isAuthentication) {

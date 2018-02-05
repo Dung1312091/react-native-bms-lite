@@ -77,7 +77,14 @@ class TicketScheduleScene extends React.Component {
             </Button>
           </Right>
         </Header>
-        <Grid style={{ height: 50, flex: 0, padding: "1%" }}>
+        <Grid
+          style={{
+            height: 55,
+            flex: 0,
+            padding: "1%",
+            backgroundColor: "#fff"
+          }}
+        >
           <Col style={{ margin: "1%", flex: 1 }}>
             <DropdownTrip />
           </Col>
@@ -91,7 +98,7 @@ class TicketScheduleScene extends React.Component {
             <DateRangePicker />
           </Col>
         </Grid>
-        <View style={{ marginTop: 5 }} />
+        {/* <View style={{ height: 15 }} /> */}
         <SeatOverview openModel={this.onpenActionSheet} />
         <ActionSheet
           ref={ref => {

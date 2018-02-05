@@ -24,7 +24,7 @@ class ActionSheet extends Component {
     switch (index) {
       case 5:
         this.actionSheet.hideAddModal();
-        Actions.seatDiagram();
+        Actions.seatDiagram({ trip: this.props.trip });
         break;
 
       default:
@@ -60,7 +60,7 @@ class ActionSheet extends Component {
     }
   }
   render() {
-    const height = 420;
+    const height = 410;
     return (
       <VxrActionSheet
         ref={ref => {

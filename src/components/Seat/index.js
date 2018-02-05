@@ -12,8 +12,12 @@ class Seat extends Component {
   }
   handleClick = item => {
     if (item._isPaymentStatus === null) {
-      this.setState({
-        selected: !this.state.selected
+      this.setState({ selected: !this.state.selected }, () => {
+        if (this.state.selected) {
+          this.props.selectSeat(item, true);
+        } else {
+          this.props.unSelectSeat(item);
+        }
       });
     }
   };
@@ -22,6 +26,7 @@ class Seat extends Component {
       this.setState({
         selected: true
       });
+      this.props.selectSeat(this.props.item, false);
     }
   }
   shouldComponentUpdate(nextProps, nextState) {
@@ -61,13 +66,13 @@ class Seat extends Component {
 const styles = StyleSheet.create({
   colStyle: {
     height: 40,
-    margin: 10,
+    margin: 2,
     justifyContent: "center",
     alignItems: "center"
   },
   seatStyle: {
-    width: 42,
-    height: 42,
+    width: 38,
+    height: 38,
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#fff",
