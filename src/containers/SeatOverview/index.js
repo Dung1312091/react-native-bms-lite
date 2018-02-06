@@ -19,6 +19,7 @@ const options = [
   "Thay đổi chỗ bán",
   "Thay đổi lịch bán"
 ];
+const optionsAddTrip = ["Bỏ qua", "Thêm chuyến"];
 const CANCEL_INDEX = 0;
 class SeatOverview extends Component {
   constructor(props) {
@@ -27,7 +28,8 @@ class SeatOverview extends Component {
       selected: "",
       fromAreaId: "",
       toAreaId: "",
-      tempData: {}
+      tempData: {},
+      isTrip: false
     };
   }
   static calculateSeatStyle(bookedQty, totalQty, type) {
@@ -59,7 +61,6 @@ class SeatOverview extends Component {
     let user = this.props.loginReducers.user;
     let token = this.props.loginReducers.token;
     let trip = JSON.parse(get_trip);
-    console.log("trip", trip);
     let params = {
       access_token: token,
       company_id: user.data.CompId,
@@ -93,14 +94,6 @@ class SeatOverview extends Component {
     //   });
     // } catch (error) {
     //   // Error saving data
-    // }
-  }
-  componentWillReceiveProps(nextProps) {
-    console.log("this.props", this.props);
-    console.log("nextProps", nextProps);
-    // if (nextProps.seatDiagramReducers.updateSeatSuccess) {
-    //   this.props.getConfigurationOverview(this.state.tempData);
-    //   console.warn("hihiih");
     // }
   }
   onPress = () => {
@@ -264,7 +257,7 @@ class SeatOverview extends Component {
                 justifyContent: "center",
                 borderColor: "#d9d8dc"
               }}
-              onPress={() => this.showActionSheet(trip)}
+              onPress={() => this.showActionSheet(trip, true)}
             >
               <View
                 style={[
@@ -305,9 +298,7 @@ class SeatOverview extends Component {
                 justifyContent: "center",
                 borderColor: "#d9d8dc"
               }}
-              onPress={() => {
-                Alert.alert("Hello anh Ẹp Chai!!!");
-              }}
+              onPress={() => this.showActionSheet(trip, false)}
             />
           </Col>
         );
@@ -355,6 +346,8 @@ class SeatOverview extends Component {
             type.isShow = true;
             type.configCustom = item.configs;
             (type.time = item.time), (type.date = date.date);
+          } else {
+            (type.time = time), (type.date = date.date);
           }
         });
         data.push(type);
@@ -366,9 +359,8 @@ class SeatOverview extends Component {
     });
     return result;
   };
-  showActionSheet = trip => {
+  showActionSheet = (trip, isTrip) => {
     let route = this.props.changeRouteReducers;
-
     let dateParam = moment(trip.date, "YYYY-MM-DD").format("DD-MM-YYYY");
     let params = {
       trip: route.route_id,
@@ -377,7 +369,7 @@ class SeatOverview extends Component {
     };
     // console.log("==>", params);
     this.props.getTicketInfo(params);
-    this.props.openModel(trip);
+    this.props.openModel(trip, isTrip);
     this.props.selectTrip(trip);
   };
   buildTitleActionSheet = (time, date, route) => {
@@ -396,7 +388,6 @@ class SeatOverview extends Component {
   //   console.warn('ref==>',ref);
   // }
   render() {
-    console.warn("render=>");
     let data = [];
     let response = this.props.configurationOverviewReducers;
     // console.log("getConfigurationOverview=>", getConfigurationOverview);
@@ -436,7 +427,6 @@ class SeatOverview extends Component {
       });
       let listTripTime = this.setUpTime(trip_overview);
       data = this.setUpAllDataToRender(listTripTime, trip_overview);
-      console.log("data", data);
     }
     // const options = [ 'Cancel', 'Apple', 'Banana', 'Watermelon', 'Durian' ];
     const {
@@ -478,6 +468,7 @@ class SeatOverview extends Component {
             options={options}
             cancelButtonIndex={CANCEL_INDEX}
             onPress={this.handlePress}
+            isTrip={this.state.isTrip}
           />
         </Content>
       </View>

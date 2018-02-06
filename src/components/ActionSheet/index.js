@@ -86,7 +86,8 @@ class VxrActionSheet extends Component {
                 borderBottomColor: "#DCDCDC",
                 width: "100%",
                 alignItems: "center",
-                justifyContent: "center"
+                justifyContent: "center",
+                padding: 4
               }}
             >
               <Text style={{ color: "#404040" }}>Tác vụ</Text>
@@ -104,7 +105,8 @@ class VxrActionSheet extends Component {
               width: "100%",
               alignItems: "center",
               justifyContent: "center",
-              height: 50
+              height: 50,
+              borderRadius: 10
             }}
           >
             <TouchableOpacity onPress={this.hideAddModal}>

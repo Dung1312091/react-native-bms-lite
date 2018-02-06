@@ -11,6 +11,7 @@ const list = [
   "Thay đổi chỗ bán",
   "Thay đổi lịch bán vé"
 ];
+const listAddTrip = ["Thêm chuyến"];
 class ActionSheet extends Component {
   constructor(props) {
     super(props);
@@ -21,7 +22,14 @@ class ActionSheet extends Component {
     this.showAddModal = this.showAddModal.bind(this);
   }
   onClick = index => {
+    const { isTrip } = this.props;
     switch (index) {
+      case 0:
+        if (!isTrip) {
+          this.actionSheet.hideAddModal();
+          Actions.addTrip();
+        }
+        break;
       case 5:
         this.actionSheet.hideAddModal();
         Actions.seatDiagram({ trip: this.props.trip });
@@ -60,17 +68,18 @@ class ActionSheet extends Component {
     }
   }
   render() {
-    const height = 410;
+    let height = this.props.isTrip ? 410 : 180;
     return (
       <VxrActionSheet
         ref={ref => {
           this.actionSheet = ref;
         }}
         height={height}
-        listItem={list}
+        listItem={this.props.isTrip ? list : listAddTrip}
         tripDate={this.state.tripDate}
         route={this.state.route}
         onClick={this.onClick}
+        isTrip={this.props.isTrip}
       />
     );
   }

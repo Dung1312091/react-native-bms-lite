@@ -20,7 +20,6 @@ class DropdownTrip extends Component {
     let trip = data.data.filter(item => {
       return item[1] === 1;
     });
-    console.log("=>", trip);
     this.setState({
       data: trip
     });

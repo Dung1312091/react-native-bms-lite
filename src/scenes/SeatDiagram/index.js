@@ -147,11 +147,9 @@ class SeatDiagram extends React.Component {
         }
       }
     }
-    console.log("result=>", result);
     return result;
   };
   componentDidMount() {
-    console.warn("xxx");
     let ticketInfo = this.props.seatOverviewReducers.ticketInfo.data.tickets;
     let tripDetail = this.props.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
       "~"
@@ -188,25 +186,8 @@ class SeatDiagram extends React.Component {
         this.state.listSelectItem.splice(index, 1);
       }
     }
-    // else {
-    //   let index = this.state.listSelectItem.findIndex(
-    //     x => x._label === data._label
-    //   );
-    //   if (index > -1) {
-    //     this.state.listSelectItem.splice(index, 1);
-    //   }
-    //   if (this.state.listSelectItem.length === 0) {
-    //     this.setState({
-    //       isShowButton: false
-    //     });
-    //   }
-    // }
   };
   componentWillReceiveProps(nextProps) {
-    console.log(
-      " this.props.seatOverviewReducers2==>",
-      nextProps.seatOverviewReducers
-    );
     if (
       this.props.changeRouteReducers.value !==
       nextProps.changeRouteReducers.value
@@ -284,20 +265,24 @@ class SeatDiagram extends React.Component {
       );
     });
   };
+  buildHeader = trip => {
+    let date = moment(trip.date, "YYYY-MM-DD").format("DD/MM/YYYY"),
+      str = `CHUYẾN ${trip.time} ${date}`;
+    return str;
+  };
   render() {
     let { data } = this.state;
-    console.warn("data", this.state.data);
     return (
       <Container style={{ backgroundColor: "#EFEFEF" }}>
         <Header style={styles.headerStyle}>
-          <Left>
+          <Left style={{ flex: 1 }}>
             <Button transparent onPress={this.back}>
               <Icon name="arrow-back" style={styles.headerTextStyle} />
             </Button>
           </Left>
-          <Body>
+          <Body style={{ flex: 4 }}>
             <Title style={styles.headerTextStyle}>
-              CHUYẾN 14:30 12/12/2017
+              {this.buildHeader(this.props.trip)}
             </Title>
           </Body>
         </Header>

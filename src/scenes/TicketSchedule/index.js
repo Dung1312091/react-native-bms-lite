@@ -49,13 +49,15 @@ class TicketScheduleScene extends React.Component {
     super(props);
     this.state = {
       trip: {},
-      route: {}
+      route: {},
+      isTrip: false
     };
   }
-  onpenActionSheet = trip => {
+  onpenActionSheet = (trip, isTrip) => {
     this.setState({
       trip: trip,
-      route: this.props.changeRouteReducers
+      route: this.props.changeRouteReducers,
+      isTrip: isTrip
     });
     this.actionSheetReducer.showAddModal();
   };
@@ -106,6 +108,7 @@ class TicketScheduleScene extends React.Component {
           }}
           trip={this.state.trip}
           route={this.state.route}
+          isTrip={this.state.isTrip}
         />
       </Container>
     );

@@ -19,13 +19,6 @@ class Dropdown extends Component {
       };
     }
   }
-  // componentWillReceiveProps(nextProps) {
-  //   const { defaultIndex, defaultValue } = nextProps;
-  //   console.warn("defaultValue", defaultValue);
-  //   this.setState({
-  //     selectedItem: { id: defaultIndex, value: defaultValue }
-  //   });
-  // }
   onDropdownSelect(index, value) {
     this.setState({
       selectedItem: { id: index, value: value }

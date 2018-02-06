@@ -8,14 +8,12 @@ const initialState = {};
 const seatDiagramReducers = (state = initialState, action) => {
   switch (action.type) {
     case CHANGE_SEAT_ONLINE_SUCCESS: {
-      console.warn("action====>", action);
       return {
         ...state,
         updateSeatSuccess: action.updateSeatSuccess
       };
     }
     case GET_CONFIGURATION_OVWERVIEW_SUCCESS: {
-      console.warn("GET_CONFIGURATION_OVWERVIEW_SUCCESS====>", action);
       return {
         ...state,
         updateSeatSuccess: false

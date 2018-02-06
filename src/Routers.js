@@ -5,6 +5,7 @@ import Main from "./scenes/Main";
 import Login from "./scenes/Login";
 import RunAppScene from "./scenes/RunAppScene";
 import SeatDiagram from "./scenes/SeatDiagram/";
+import AddTrip from "./scenes/AddTrip";
 class RouterComponent extends Component {
   render() {
     return (
@@ -26,6 +27,7 @@ class RouterComponent extends Component {
             {/* <Scene key="MainScene" component={Main} /> */}
           </Scene>
           <Scene key="seatDiagram" component={SeatDiagram} hideNavBar="true" />
+          <Scene key="addTrip" component={AddTrip} hideNavBar="true" />
         </Stack>
       </Router>
     );

@@ -19,7 +19,6 @@ const seatOverviewReducers = (state = initialState, action) => {
       };
     }
     case BUILD_DATA_RENDER_SEAT_DIAGRAM: {
-      console.log("action", action);
       return {
         ...state,
         data: action.data

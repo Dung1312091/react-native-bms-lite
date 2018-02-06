@@ -20,10 +20,10 @@ function* changeSeatDiagramSagas(action) {
           type: CHANGE_SEAT_ONLINE_SUCCESS,
           updateSeatSuccess: true
         });
-        let x = yield getToken(PARAM);
+        let params = yield getToken(PARAM);
         yield put({
           type: GET_CONFIGURATION_OVWERVIEW,
-          params: JSON.parse(x)
+          params: JSON.parse(params)
         });
       }
     }
