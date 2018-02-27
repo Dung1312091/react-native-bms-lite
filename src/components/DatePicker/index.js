@@ -2,11 +2,13 @@ import React, { Component } from "react";
 import { Text, TouchableOpacity, View } from "react-native";
 import { Icon } from "native-base";
 import DateTimePicker from "react-native-modal-datetime-picker";
+import moment from "moment";
 class DatePicker extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isDateTimePickerVisible: false
+      isDateTimePickerVisible: false,
+      date: moment().format("DD-MM-YYYY")
     };
   }
   _showDateTimePicker = () => this.setState({ isDateTimePickerVisible: true });
@@ -14,9 +16,18 @@ class DatePicker extends Component {
   _hideDateTimePicker = () => this.setState({ isDateTimePickerVisible: false });
 
   _handleDatePicked = date => {
+    // console.warn("data=>", date);
+    this.setState({
+      date: moment(date).format("DD-MM-YYYY")
+    });
+    this.props.onChangeDate(moment(date).format("DD-MM-YYYY"));
     this._hideDateTimePicker();
   };
+  componentDidMount() {
+    this.props.onChangeDate(this.state.date);
+  }
   render() {
+    let { date } = this.state;
     return (
       <View style={{ flex: 1 }}>
         {/* <TouchableOpacity onPress={this._showDateTimePicker}>
@@ -31,7 +42,7 @@ class DatePicker extends Component {
             name="md-calendar"
             style={[styles.dateGroupItem, styles.iconStyle]}
           />
-          <Text style={styles.dateGroupItem}>30-01-2017</Text>
+          <Text style={styles.dateGroupItem}>{date}</Text>
         </TouchableOpacity>
         <DateTimePicker
           isVisible={this.state.isDateTimePickerVisible}

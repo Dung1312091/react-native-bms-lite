@@ -255,16 +255,27 @@ class TicketManagement extends Component {
               onDropdownSelect={() => {
                 return null;
               }}
+              defaultValue={{}}
             />
           </Col>
         </Grid>
         <View style={{ marginTop: 30 }} />
         <Grid style={{ padding: "1%", flex: 0 }}>
           <Col style={{ margin: "1%", flex: 1 }}>
-            <DatePicker text="Từ ngày" />
+            <DatePicker
+              text="Từ ngày"
+              onChangeDate={() => {
+                return {};
+              }}
+            />
           </Col>
           <Col style={{ margin: "1%", flex: 1 }}>
-            <DatePicker text="Đến ngày" />
+            <DatePicker
+              text="Đến ngày"
+              onChangeDate={() => {
+                return {};
+              }}
+            />
           </Col>
         </Grid>
         <View style={{ flex: 1, marginTop: 30 }}>

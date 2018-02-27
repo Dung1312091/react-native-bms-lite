@@ -23,6 +23,7 @@ class Dropdown extends Component {
     this.setState({
       selectedItem: { id: index, value: value }
     });
+
     this.props.onDropdownSelect(index, value);
   }
 

@@ -43,7 +43,19 @@ function* LoginSagas(action) {
           "GET",
           params
         );
-        // console.log('trip1',trip);
+        let seat_templates_response = yield Api.CallAPI(
+          "https://api-sandbox.vexere.com/v1/",
+          `seat_templates/physical_template/company/${data.data.CompId}`,
+          "GET",
+          { access_token: token.access_token }
+        );
+        //console.warn("aaa", JSON.parse(seat_templates_response._bodyInit));
+        let group_seat_templates = yield Api.CallAPI(
+          "https://api-sandbox.vexere.com/v1/",
+          `seat_templates/company/${data.data.CompId}`,
+          "GET",
+          { access_token: token.access_token, detail: 1 }
+        );
         if (trip.status === 200) {
           yield put({
             type: LOGIN_SUCCESS,
@@ -51,7 +63,9 @@ function* LoginSagas(action) {
               username: action.params.username,
               trip: trip,
               user: data,
-              token: token
+              token: token,
+              seat_templates: JSON.parse(seat_templates_response._bodyInit),
+              group_seat_templates: JSON.parse(group_seat_templates._bodyInit)
             }
           });
         }
@@ -93,12 +107,28 @@ function* Authentication(action) {
         "GET",
         params
       );
+      let seat_templates_response = yield Api.CallAPI(
+        "https://api-sandbox.vexere.com/v1/",
+
+        `seat_templates/physical_template/company/${data.data.CompId}`,
+        "GET",
+        { access_token: token }
+      );
+      let group_seat_templates = yield Api.CallAPI(
+        "https://api-sandbox.vexere.com/v1/",
+
+        `seat_templates/company/${data.data.CompId}`,
+        "GET",
+        { access_token: token, detail: 1 }
+      );
       if (trip.status === 200) {
         yield put({
           type: AUTHENTICATION_SUCCESS,
           token: token,
           trip: trip,
-          user: data
+          user: data,
+          seat_templates: JSON.parse(seat_templates_response._bodyInit),
+          group_seat_templates: JSON.parse(group_seat_templates._bodyInit)
         });
       }
     }

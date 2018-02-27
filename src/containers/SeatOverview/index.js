@@ -58,6 +58,7 @@ class SeatOverview extends Component {
     );
     let toDate = this.converDate(fromDate, 3);
     let get_trip = this.props.loginReducers.trip._bodyInit;
+    console.log("get_trip=>", this.props.loginReducers);
     let user = this.props.loginReducers.user;
     let token = this.props.loginReducers.token;
     let trip = JSON.parse(get_trip);
@@ -211,7 +212,7 @@ class SeatOverview extends Component {
     let type = 0;
     return data.map((trip, i) => {
       if (trip && trip.configCustom) {
-        console.log("trip.configCustom=>", trip.configCustom);
+        // console.log("trip.configCustom=>", trip.configCustom);
         if (
           trip.configCustom.selling_configs &&
           trip.configCustom.selling_configs.selling_configs[2]

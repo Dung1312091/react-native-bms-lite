@@ -19,6 +19,7 @@ import DateRangePicker from "../../components/DateRangePicker";
 import SeatOverview from "../../containers/SeatOverview";
 // import Dropdown from "../../components/Dropdown";
 import DropdownTrip from "../../containers/DropdownTrip";
+import { Actions } from "react-native-router-flux";
 //import MyDropDown from "../../components/myDropDown/index";
 const styles = StyleSheet.create({
   container: {
@@ -61,12 +62,21 @@ class TicketScheduleScene extends React.Component {
     });
     this.actionSheetReducer.showAddModal();
   };
+  onAddTrip = () => {
+    let get_trip = this.props.loginReducers.trip._bodyInit;
+    let route = this.props.changeRouteReducers;
+    let data = JSON.parse(get_trip);
+    let trip = data.data.filter(item => {
+      return item[1] === 1;
+    });
+    Actions.addNewTrip({ adNewTrip: true, trip: trip, route: route });
+  };
   render() {
     return (
       <Container>
         <Header>
           <Left style={styles.headerLeft}>
-            <Button transparent>
+            <Button transparent onPress={this.onAddTrip}>
               <Icon name="md-add" />
             </Button>
           </Left>

@@ -12,10 +12,28 @@ class MyDropDown extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      selected1: ""
+      selected1: ["12", "", "Dung dt"]
     };
   }
+  // componentWillMount() {
+  //   const { defaultValue } = this.props;
+  //   if (defaultValue !== undefined) {
+  //     this.setState({
+  //       selected1: defaultValue
+  //     });````
+  //   }
+  // }
+  componentDidMount() {
+    this.props.onDropdownSelect(this.props.data[0]);
+    const { defaultValue } = this.props;
+    if (defaultValue !== undefined) {
+      this.setState({
+        selected1: defaultValue
+      });
+    }
+  }
   onValueChange(value) {
+    console.log("value=>", value);
     this.props.onDropdownSelect(value);
     this.setState({
       selected1: value
@@ -27,6 +45,7 @@ class MyDropDown extends Component {
     });
   };
   render() {
+    console.log("this.state.selected1==>", this.state.selected1);
     return (
       <Container>
         <View style={{ height: 45 }}>

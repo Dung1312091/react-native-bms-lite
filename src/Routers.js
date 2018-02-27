@@ -6,6 +6,9 @@ import Login from "./scenes/Login";
 import RunAppScene from "./scenes/RunAppScene";
 import SeatDiagram from "./scenes/SeatDiagram/";
 import AddTrip from "./scenes/AddTrip";
+import AddNewTrip from "./scenes/AddNewTrip";
+import AddNewTripStepTow from "./scenes/AddNewTripStepTow";
+import FareCreation from "./scenes/FareCreation";
 class RouterComponent extends Component {
   render() {
     return (
@@ -28,6 +31,19 @@ class RouterComponent extends Component {
           </Scene>
           <Scene key="seatDiagram" component={SeatDiagram} hideNavBar="true" />
           <Scene key="addTrip" component={AddTrip} hideNavBar="true" />
+          <Scene key="addNewTrip" component={AddNewTrip} hideNavBar="true" />
+          <Scene
+            key="addNewTripStepTow"
+            component={AddNewTripStepTow}
+            hideNavBar="true"
+            // initial
+          />
+          <Scene
+            key="fareCreation"
+            component={FareCreation}
+            hideNavBar="true"
+            // initial
+          />
         </Stack>
       </Router>
     );

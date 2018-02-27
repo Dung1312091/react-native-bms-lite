@@ -51,7 +51,13 @@ class DropdownTrip extends Component {
   };
   render() {
     let { data } = this.state;
-    return <MyDropDown data={data} onDropdownSelect={this.selectRoute} />;
+    return (
+      <MyDropDown
+        data={data}
+        onDropdownSelect={this.selectRoute}
+        defaultValue={{}}
+      />
+    );
   }
 }
 

@@ -28,7 +28,8 @@ class SeatDiagram extends React.Component {
       data: [],
       check: false,
       isShowButton: false,
-      listSelectItem: []
+      listSelectItem: [],
+      isLoading: true
     };
   }
   buildString = (lable, coach, row, col, id) => {
@@ -74,6 +75,7 @@ class SeatDiagram extends React.Component {
       colFloor_2 = floor_2[2];
     }
     let tmpSeats = [];
+    console.log("seatDiagram=>", seatDiagram);
     for (let i = startIndex; i < seatDiagram.length; i++) {
       let item = seatDiagram[i].split("|");
       let isOnline = false;
@@ -149,7 +151,7 @@ class SeatDiagram extends React.Component {
     }
     return result;
   };
-  componentDidMount() {
+  componentWillMount() {
     let ticketInfo = this.props.seatOverviewReducers.ticketInfo.data.tickets;
     let tripDetail = this.props.selectTripReducer.trip.configCustom.selling_configs.selling_configs[2].seats.split(
       "~"
@@ -162,6 +164,13 @@ class SeatDiagram extends React.Component {
     this.setState({
       data: data
     });
+  }
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        isLoading: false
+      });
+    }, 100);
   }
   back = () => {
     Actions.pop();
@@ -290,7 +299,7 @@ class SeatDiagram extends React.Component {
         <View style={{ alignItems: "center" }}>
           <Text>THAY ĐỔI CHỖ BÁN ONLINE</Text>
         </View>
-        {this.state.data.length < 1 ? (
+        {this.state.isLoading ? (
           <Loading />
         ) : (
           <View style={{ flex: 1 }}>

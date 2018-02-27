@@ -7,7 +7,7 @@ import {
   TouchableHighlight
 } from "react-native";
 import { Actions } from "react-native-router-flux";
-import Modal from "react-native-modalbox";
+// import Modal from "react-native-modalbox";
 import {
   Container,
   Body,
@@ -22,6 +22,7 @@ import {
 } from "native-base";
 import DatePicker from "../../components/DatePicker";
 import MyDropdown from "../../components/myDropDown";
+import Loading from "../../components/Loading";
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -50,7 +51,8 @@ class AddTrip extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      listTripTime: []
+      listTripTime: [],
+      isLoading: true
     };
     // this.showModal = this.showModal.bind(this);
   }
@@ -61,11 +63,17 @@ class AddTrip extends React.Component {
       listTripTime: this.state.listTripTime
     });
   }
+  componentDidMount() {
+    setTimeout(() => {
+      this.setState({
+        isLoading: false
+      });
+    }, 100);
+  }
   back = () => {
     Actions.pop();
   };
   renderTripTime = () => {
-    console.warn("asas", this.state.listTripTime);
     return this.state.listTripTime.map((item, index) => {
       return (
         <View
@@ -124,241 +132,241 @@ class AddTrip extends React.Component {
             <Title style={styles.headerTextStyle}>BƯỚC 1/3: CHỌN CHUYẾN</Title>
           </Body>
         </Header>
-        <View style={{ flex: 1 }}>
-          <ScrollView>
+        {this.state.isLoading ? (
+          <Loading />
+        ) : (
+          <View style={{ flex: 1 }}>
             <View>
-              <View style={{ padding: 6, backgroundColor: "#ECEFF4" }}>
-                <Text>THÔNG TIN CHUYẾN HỦY</Text>
-              </View>
-            </View>
+              <ScrollView>
+                <View>
+                  <View style={{ padding: 6, backgroundColor: "#ECEFF4" }}>
+                    <Text>THÔNG TIN CHUYẾN HỦY</Text>
+                  </View>
+                </View>
 
-            <View>
-              <View style={{ padding: 6, backgroundColor: "#fff" }}>
-                <Text>Chuyến: 06:00</Text>
-                <Text>Tuyến: Sài Gòn - Nha Trang</Text>
-              </View>
-            </View>
+                <View>
+                  <View style={{ padding: 6, backgroundColor: "#fff" }}>
+                    <Text>Chuyến: 06:00</Text>
+                    <Text>Tuyến: Sài Gòn - Nha Trang</Text>
+                  </View>
+                </View>
 
-            <View
-              style={{
-                padding: 6,
-                flexDirection: "row",
-                justifyContent: "space-between"
-              }}
-            >
-              <View
-                style={{ justifyContent: "center", backgroundColor: "#ECEFF4" }}
-              >
-                <Text>DANH SÁCH THÊM CHUYẾN MỚI</Text>
-              </View>
-              {/* Danh sách chuyến thêm mới */}
-              <View style={{ justifyContent: "center" }}>
-                <TouchableHighlight
+                <View
                   style={{
-                    height: 35,
-                    width: 70,
-                    alignItems: "center",
-                    backgroundColor: "#4A86E8",
-                    justifyContent: "center"
+                    padding: 6,
+                    flexDirection: "row",
+                    justifyContent: "space-between"
                   }}
-                  disabled={true}
-                  // onPress={() => this.modal.open()}
                 >
-                  <Icon name="md-add" style={{ color: "#fff" }} />
-                </TouchableHighlight>
-              </View>
-            </View>
-            <View
-              style={{
-                backgroundColor: "#fff"
-              }}
-            >
-              <View style={{ padding: 3 }}>
-                {/* <ScrollView style={{ zIndex: 1000 }}> */}
+                  <View
+                    style={{
+                      justifyContent: "center",
+                      backgroundColor: "#ECEFF4"
+                    }}
+                  >
+                    <Text>DANH SÁCH THÊM CHUYẾN MỚI</Text>
+                  </View>
+                  {/* Danh sách chuyến thêm mới */}
+                  <View style={{ justifyContent: "center" }}>
+                    <TouchableHighlight
+                      style={{
+                        height: 35,
+                        width: 70,
+                        alignItems: "center",
+                        backgroundColor: "#4A86E8",
+                        justifyContent: "center"
+                      }}
+                      disabled={true}
+                      // onPress={() => this.modal.open()}
+                    >
+                      <Icon name="md-add" style={{ color: "#fff" }} />
+                    </TouchableHighlight>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    backgroundColor: "#fff"
+                  }}
+                >
+                  <View style={{ padding: 3 }}>
+                    {/* <ScrollView style={{ zIndex: 1000 }}> */}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap"
+                      }}
+                    >
+                      {this.renderTripTime()}
+                    </View>
+                    {/* </ScrollView> */}
+                  </View>
+                </View>
+                {/* Thời gian áp dụng */}
+                <Grid style={{ padding: "1%", flex: 0 }}>
+                  <Col
+                    style={{
+                      margin: "1%",
+                      flex: 1
+                    }}
+                  >
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "#DBDBDB",
+                        height: 40
+                      }}
+                    >
+                      <DatePicker text="Từ ngày" />
+                    </View>
+                  </Col>
+                  <Col style={{ margin: "1%", flex: 1 }}>
+                    <View
+                      style={{
+                        borderWidth: 1,
+                        borderColor: "#DBDBDB",
+                        height: 40
+                      }}
+                    >
+                      <DatePicker text="Đến ngày" />
+                    </View>
+                  </Col>
+                </Grid>
+                {/* Option chọn tất cả các ngày hoặc cac thử trong tuần */}
+                <View
+                  style={{
+                    alignItems: "center",
+                    height: 40,
+                    padding: 6
+                  }}
+                >
+                  <View style={{ width: "100%" }}>
+                    <MyDropdown
+                      data={optionList}
+                      onDropdownSelect={() => {
+                        return null;
+                      }}
+                      defaultValue={{}}
+                    />
+                  </View>
+                </View>
+                <View style={{ marginTop: 16 }} />
+                {/* Checkbox các thứ trong tuần */}
                 <View
                   style={{
                     flexDirection: "row",
                     flexWrap: "wrap"
                   }}
                 >
-                  {this.renderTripTime()}
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
+                  <View style={{ flexDirection: "row" }}>
+                    <CheckBox checked={true} />
+                    <Text style={{ marginLeft: 12 }}>T2</Text>
+                  </View>
                 </View>
-                {/* </ScrollView> */}
-              </View>
+                {/* Tự động gia hạn cấu hình */}
+                <View style={{ flexDirection: "row", marginTop: 14 }}>
+                  <CheckBox checked={true} />
+                  <Text style={{ marginLeft: 12 }}>
+                    Tự động gia hạn cấu hình
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    alignItems: "center",
+                    marginTop: 10,
+                    padding: 6,
+                    height: 40
+                  }}
+                >
+                  <View style={{ width: "100%" }}>
+                    <MyDropdown
+                      data={autoRenew}
+                      onDropdownSelect={() => {
+                        return null;
+                      }}
+                      defaultValue={{}}
+                    />
+                  </View>
+                </View>
+                {/* Thời gian ngưng bán vé trước khi khởi hành */}
+                <View style={{ marginTop: 10 }} />
+                <View style={{ padding: 6 }}>
+                  <View style={{ backgroundColor: "#ECEFF4" }}>
+                    <Text>THỜI GIAN NGƯNG BÁN VÉ TRƯỚC KHI KHỞI HÀNH</Text>
+                  </View>
+                  <View style={{ width: "100%", height: 40, marginTop: 5 }}>
+                    <MyDropdown
+                      data={TimeStopTicketSales}
+                      onDropdownSelect={() => {
+                        return null;
+                      }}
+                      defaultValue={{}}
+                    />
+                  </View>
+                </View>
+                {/* Cấu hình private riêng */}
+                <View
+                  style={{
+                    flexDirection: "row",
+                    marginTop: 14,
+                    marginBottom: 20
+                  }}
+                >
+                  <CheckBox checked={true} />
+                  <Text style={{ marginLeft: 12 }}>Cấu hình private riêng</Text>
+                </View>
+              </ScrollView>
             </View>
-            {/* Thời gian áp dụng */}
-            <Grid style={{ padding: "1%", flex: 0 }}>
-              <Col
+            <View
+              style={[
+                {
+                  width: "100%",
+                  // marginTop: 3,
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flexDirection: "row",
+                  position: "absolute",
+                  bottom: 0
+                }
+              ]}
+            >
+              <Button
                 style={{
-                  margin: "1%",
-                  flex: 1
+                  width: "99%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: 3
                 }}
+                onPress={this.changeSeatOnline}
               >
-                <View
-                  style={{ borderWidth: 1, borderColor: "#DBDBDB", height: 40 }}
-                >
-                  <DatePicker text="Từ ngày" />
-                </View>
-              </Col>
-              <Col style={{ margin: "1%", flex: 1 }}>
-                <View
-                  style={{ borderWidth: 1, borderColor: "#DBDBDB", height: 40 }}
-                >
-                  <DatePicker text="Đến ngày" />
-                </View>
-              </Col>
-            </Grid>
-            {/* Option chọn tất cả các ngày hoặc cac thử trong tuần */}
-            <View
-              style={{
-                alignItems: "center",
-                height: 40,
-                padding: 6
-              }}
-            >
-              <View style={{ width: "100%" }}>
-                <MyDropdown
-                  data={optionList}
-                  onDropdownSelect={() => {
-                    return null;
-                  }}
-                />
-              </View>
-            </View>
-            <View style={{ marginTop: 16 }} />
-            {/* Checkbox các thứ trong tuần */}
-            <View
-              style={{
-                flexDirection: "row",
-                flexWrap: "wrap"
-              }}
-            >
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-              <View style={{ flexDirection: "row" }}>
-                <CheckBox checked={true} />
-                <Text style={{ marginLeft: 12 }}>T2</Text>
-              </View>
-            </View>
-            {/* Tự động gia hạn cấu hình */}
-            <View style={{ flexDirection: "row", marginTop: 14 }}>
-              <CheckBox checked={true} />
-              <Text style={{ marginLeft: 12 }}>Tự động gia hạn cấu hình</Text>
-            </View>
-            <View
-              style={{
-                alignItems: "center",
-                marginTop: 10,
-                padding: 6,
-                height: 40
-              }}
-            >
-              <View style={{ width: "100%" }}>
-                <MyDropdown
-                  data={autoRenew}
-                  onDropdownSelect={() => {
-                    return null;
-                  }}
-                />
-              </View>
-            </View>
-            {/* Thời gian ngưng bán vé trước khi khởi hành */}
-            <View style={{ marginTop: 10 }} />
-            <View style={{ padding: 6 }}>
-              <View style={{ backgroundColor: "#ECEFF4" }}>
-                <Text>THỜI GIAN NGƯNG BÁN VÉ TRƯỚC KHI KHỞI HÀNH</Text>
-              </View>
-              <View style={{ width: "100%", height: 40, marginTop: 5 }}>
-                <MyDropdown
-                  data={TimeStopTicketSales}
-                  onDropdownSelect={() => {
-                    return null;
-                  }}
-                />
-              </View>
-            </View>
-            {/* Cấu hình private riêng */}
-            <View
-              style={{ flexDirection: "row", marginTop: 14, marginBottom: 20 }}
-            >
-              <CheckBox checked={true} />
-              <Text style={{ marginLeft: 12 }}>Cấu hình private riêng</Text>
-            </View>
-          </ScrollView>
-        </View>
-        <View
-          style={[
-            {
-              width: "100%",
-              // marginTop: 3,
-              alignItems: "center",
-              justifyContent: "center",
-              flexDirection: "row"
-            }
-          ]}
-        >
-          <Button
-            style={{
-              width: "99%",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: 3
-            }}
-            onPress={this.changeSeatOnline}
-          >
-            <Text>Tiếp tục</Text>
-          </Button>
-        </View>
-        {/* <Modal
-          style={{
-            justifyContent: "center",
-            alignItems: "center",
-            height: "100%",
-            backgroundColor: "#3B5998"
-          }}
-          // ref={ref => {
-          //   this.modalAddTrip = ref;
-          // }}
-          ref={ref => {
-            this.modal = ref;
-          }}
-          swipeArea={20}
-          position={"center"}
-        >
-          <View style={{ width: "85%", backgroundColor: "red" }}>
-            <View>
-              <Text>THÊM CHUYẾN ĐƠN LẼ</Text>
-            </View>
-            <View
-              style={{ justifyContent: "space-between", flexDirection: "row" }}
-            >
-              <Text>Giờ chạy</Text>
-              <TextInput />
+                <Text>Tiếp tục</Text>
+              </Button>
             </View>
           </View>
-        </Modal> */}
+        )}
       </Container>
     );
   }
