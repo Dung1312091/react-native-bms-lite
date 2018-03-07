@@ -75,7 +75,7 @@ class SeatDiagram extends React.Component {
       colFloor_2 = floor_2[2];
     }
     let tmpSeats = [];
-    console.log("seatDiagram=>", seatDiagram);
+    //console.log("seatDiagram=>", seatDiagram);
     for (let i = startIndex; i < seatDiagram.length; i++) {
       let item = seatDiagram[i].split("|");
       let isOnline = false;

@@ -6,6 +6,7 @@ import changeRouteReducer from "../containers/DropdownTrip/reducer";
 import selectTripReducer from "./tripDetail";
 import seatOverviewReducers from "../containers/SeatOverview/reducers";
 import seatDiagramReducers from "../scenes/SeatDiagram/reducer";
+import addTripReducer from "../scenes/FareCreation/reducer";
 const allReducers = combineReducers({
   loginReducers,
   getDayReducers,
@@ -13,6 +14,7 @@ const allReducers = combineReducers({
   changeRouteReducer,
   selectTripReducer,
   seatOverviewReducers,
-  seatDiagramReducers
+  seatDiagramReducers,
+  addTripReducer
 });
 export default allReducers;

@@ -58,7 +58,7 @@ class SeatOverview extends Component {
     );
     let toDate = this.converDate(fromDate, 3);
     let get_trip = this.props.loginReducers.trip._bodyInit;
-    console.log("get_trip=>", this.props.loginReducers);
+    //console.log("get_trip=>", this.props.loginReducers);
     let user = this.props.loginReducers.user;
     let token = this.props.loginReducers.token;
     let trip = JSON.parse(get_trip);

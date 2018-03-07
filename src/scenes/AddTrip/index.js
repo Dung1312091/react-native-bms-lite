@@ -58,6 +58,8 @@ class AddTrip extends React.Component {
   }
   componentWillMount() {
     const { time } = this.props.trip;
+    console.warn("this.props.trip=>", this.props.trip);
+
     this.state.listTripTime.push(time);
     this.setState({
       listTripTime: this.state.listTripTime
@@ -120,6 +122,7 @@ class AddTrip extends React.Component {
   };
   render() {
     // console.warn("asnakllasn", this.props.trip);
+    let { date } = this.props.trip;
     return (
       <Container style={{ backgroundColor: "#fff" }}>
         <Header style={styles.headerStyle}>
@@ -216,7 +219,10 @@ class AddTrip extends React.Component {
                         height: 40
                       }}
                     >
-                      <DatePicker text="Từ ngày" />
+                      <DatePicker
+                        text="Từ ngày"
+                        defaultValue={date ? date : null}
+                      />
                     </View>
                   </Col>
                   <Col style={{ margin: "1%", flex: 1 }}>
@@ -227,7 +233,10 @@ class AddTrip extends React.Component {
                         height: 40
                       }}
                     >
-                      <DatePicker text="Đến ngày" />
+                      <DatePicker
+                        text="Đến ngày"
+                        defaultValue={date ? date : null}
+                      />
                     </View>
                   </Col>
                 </Grid>

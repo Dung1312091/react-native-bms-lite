@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View, Text, Alert } from "react-native";
 import {
   Container,
   Body,
@@ -24,19 +24,42 @@ class AddNewTripStepTow extends Component {
     this.state = {
       optionList: [["0", "", "Chọn loại xe"]],
       data: [],
-      id: null
+      id: null,
+      listSelectItem: [],
+      coach: null
     };
   }
   back = () => {
     Actions.pop();
   };
-  next = () => {
-    Actions.fareCreation({ id: this.state.id });
+  showErr = err => {
+    Alert.alert(err);
   };
-  selectTrip = value => {
-    console.log("value=>", value);
-    let seatInfo = value[1].split("~");
+  next = () => {
+    if (this.state.listSelectItem.length < 2) {
+      this.showErr("Bạn cần chọn ít nhất 2 chỗ bán Online");
+      return;
+    }
+    Actions.fareCreation({
+      id: this.state.id,
+      listSeat: this.state.listSelectItem,
+      other_config: this.props.other_config,
+      listTime: this.props.listTime,
+      date_of_week_value: this.props.date_of_week_value,
+      date_of_week: this.props.date_of_week,
+      coach: this.state.coach,
+      is_priority: this.props.is_priority,
+      time_limit: this.props.time_limit
+    });
+  };
+  selectTrip = id => {
+    // console.warn("this.state.data", this.state.optionList);
+    let value = this.state.optionList.filter(item => item[0] === id);
+    //console.warn("value=>", value);
+    let seatInfo = value[0][1].split("~");
     let seatDiagram = seatInfo[0].split("|");
+    let seatDiagramId = value[0][0];
+    console.warn("value=>", value);
     let coach = seatDiagram[1]; //so tang
     let result = [];
     let floor_1 = [];
@@ -74,7 +97,7 @@ class AddNewTripStepTow extends Component {
         _col: itemCol,
         _isOnline: isOnline,
         _isPaymentStatus: paymentStatus,
-        _seatDiagramId: seatDiagram[0]
+        _seatDiagramId: seatDiagramId
       });
     }
     for (let c = 1; c <= coach; c++) {
@@ -110,18 +133,21 @@ class AddNewTripStepTow extends Component {
         }
       }
     }
-    console.log("result=>", result);
+    // console.log("result=>", result);
     this.setState({
       data: result,
-      id: value[0]
+      id: id,
+      coach: coach
     });
   };
   componentWillMount() {
+    console.warn("ahihi");
     const seat_templates = this.props.seat_templates.data;
     // console.log(
     //   "this.props.seat_templates.data=>",
     //   this.props.seat_templates.data
     // );
+    // console.log("seat_templates==>", seat_templates);
     seat_templates.forEach(item => {
       let temp = [item.id, item.info, item.name];
       this.state.optionList.push(temp);
@@ -145,27 +171,27 @@ class AddNewTripStepTow extends Component {
     });
   };
   selectSeat = (data, isShow) => {
-    // this.state.listSelectItem.push(data);
-    // if (isShow) {
-    //   this.setState({
-    //     isShowButton: true
-    //   });
-    // }
-    console.log(data);
+    this.state.listSelectItem.push(data);
+    if (isShow) {
+      this.setState({
+        isShowButton: true
+      });
+    }
+    console.warn(data);
   };
   unSelectSeat = data => {
-    // if (data._isOnline) {
-    //   this.setState({
-    //     isShowButton: true
-    //   });
-    //   let index = this.state.listSelectItem.findIndex(
-    //     x => x._label === data._label
-    //   );
-    //   if (index > -1) {
-    //     this.state.listSelectItem.splice(index, 1);
-    //   }
-    // }
-    console.log(data);
+    if (data._isOnline) {
+      this.setState({
+        isShowButton: true
+      });
+      let index = this.state.listSelectItem.findIndex(
+        x => x._label === data._label
+      );
+      if (index > -1) {
+        this.state.listSelectItem.splice(index, 1);
+      }
+    }
+    console.warn(data);
   };
   renderSeatMap = arr => {
     return arr.map((item, index) => {
@@ -397,8 +423,10 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = state => {
+  console.warn("loginReducers=>", state.loginReducers);
   return {
-    seat_templates: state.loginReducers.seat_templates
+    seat_templates: state.loginReducers.seat_templates,
+    userInfo: state.loginReducers.user.data.Info
   };
 };
 export default connect(mapStateToProps, null)(AddNewTripStepTow);

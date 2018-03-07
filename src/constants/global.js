@@ -1,0 +1,1 @@
+export const RIGHT_PRIVATE_CONFIG = "1|11054|111";

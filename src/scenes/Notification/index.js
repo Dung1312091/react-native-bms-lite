@@ -26,7 +26,7 @@ class Notification extends Component {
     };
   }
   onValueChange2(value) {
-    console.log("v=>", value);
+    //console.log("v=>", value);
     this.setState({
       selected2: value
     });

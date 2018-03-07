@@ -1,0 +1,4 @@
+#Wed Jan 31 14:45:07 ICT 2018
+base.0=E\:\\My Work\\VXR\\React-Native\\BmsLite\\android\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main
+renamed.0=classes.dex
+file.0=E\:\\My Work\\VXR\\React-Native\\BmsLite\\android\\app\\build\\intermediates\\transforms\\dex\\debug\\folders\\1000\\1f\\main\\classes.dex

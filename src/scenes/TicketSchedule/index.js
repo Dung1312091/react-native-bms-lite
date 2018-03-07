@@ -64,12 +64,22 @@ class TicketScheduleScene extends React.Component {
   };
   onAddTrip = () => {
     let get_trip = this.props.loginReducers.trip._bodyInit;
+    let user = this.props.loginReducers.user;
     let route = this.props.changeRouteReducers;
     let data = JSON.parse(get_trip);
     let trip = data.data.filter(item => {
       return item[1] === 1;
     });
-    Actions.addNewTrip({ adNewTrip: true, trip: trip, route: route });
+    console.warn("trip", trip);
+    console.warn("route", route);
+
+    console.warn("user", user);
+
+    Actions.addNewTrip({
+      trip: trip,
+      route: route,
+      user: user
+    });
   };
   render() {
     return (
@@ -119,6 +129,7 @@ class TicketScheduleScene extends React.Component {
           trip={this.state.trip}
           route={this.state.route}
           isTrip={this.state.isTrip}
+          user={this.props.loginReducers.user}
         />
       </Container>
     );

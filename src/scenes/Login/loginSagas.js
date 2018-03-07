@@ -80,7 +80,6 @@ function* LoginSagas(action) {
 }
 function* Authentication(action) {
   const token = yield getToken(ACCESS_TOKEN);
-  // console.warn('pass qua token');
   if (token) {
     let user = yield Api.CallAPI(
       "https://api-sandbox.vexere.com/v1/",
@@ -89,6 +88,9 @@ function* Authentication(action) {
       { access_token: token }
     );
     let data = JSON.parse(user._bodyInit);
+    console.log("user=>", user);
+    console.log("data=>", data);
+
     if (user.status === 400) {
       yield put({
         type: AUTHENTICATION_FAIL

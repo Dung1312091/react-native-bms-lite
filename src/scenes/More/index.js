@@ -1,5 +1,7 @@
 import React, { Component } from "react";
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
+import { Actions } from "react-native-router-flux";
+import { connect } from "react-redux";
 import {
   Container,
   Header,
@@ -17,45 +19,48 @@ import {
 class More extends Component {
   constructor() {
     super();
-    this.state = {};
+    this.state = {
+      userName: ""
+    };
+  }
+  componentWillMount() {
+    this.setState({
+      userName: this.props.userInfo.Username
+    });
   }
   shouldComponentUpdate(nextProps, nextState) {
     return false;
   }
+  acCountInfo = () => {
+    Actions.account({ userName: this.state.userName });
+  };
   render() {
+    let { userInfo } = this.props;
     return (
       <Container>
-        <Header>
-          <Left style={styles.headerLeft}>
-            <Button transparent>
-              <Icon name="arrow-back" />
-            </Button>
-          </Left>
+        <Header style={{ alignItems: "center" }}>
           <Body style={styles.headerBody}>
-            <Title>FUTA BUSLINE</Title>
+            <Title>FUTA BUS LITE</Title>
           </Body>
-          <Right style={styles.headerRight}>
-            <Button transparent>
-              <Icon name="ios-more-outline" />
-            </Button>
-          </Right>
         </Header>
         <Content style={{ backgroundColor: "#fff" }}>
           <List>
-            <ListItem avatar>
-              <Left>
-                <Icon name="ios-contact" style={styles.iconStyle} />
-              </Left>
-              <Body>
-                <Text>Thông tin tài khoản</Text>
-                <Text note style={styles.textNoteStyle}>
-                  hungle.saoviet
-                </Text>
-              </Body>
-              <Right>
-                <Icon name="arrow-forward" />
-              </Right>
-            </ListItem>
+            <TouchableOpacity>
+              <ListItem avatar button onPress={this.acCountInfo}>
+                <Left>
+                  <Icon name="ios-contact" style={styles.iconStyle} />
+                </Left>
+                <Body>
+                  <Text>Thông tin tài khoản</Text>
+                  <Text note style={styles.textNoteStyle}>
+                    {this.state.userName}
+                  </Text>
+                </Body>
+                <Right>
+                  <Icon name="arrow-forward" />
+                </Right>
+              </ListItem>
+            </TouchableOpacity>
             <ListItem avatar>
               <Left>
                 <Icon name="ios-cog" style={styles.iconStyle} />
@@ -205,5 +210,9 @@ const styles = {
     flex: 1
   }
 };
-
-export default More;
+const mapStateToProps = state => {
+  return {
+    userInfo: state.loginReducers.user.data
+  };
+};
+export default connect(mapStateToProps, null)(More);

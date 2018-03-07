@@ -32,7 +32,7 @@ const listFromTo = getTripsByDateResult => {
           routeInfo = routeInfo.substring(2, routeInfo.length);
         }
         routeInfoSplits = routeInfo.split("~");
-        console.log("routeInfoSplits=>", routeInfoSplits);
+        // console.log("routeInfoSplits=>", routeInfoSplits);
         routeInfoSplits.forEach((pointInfo, pointIdx) => {
           pointInfoSplits = pointInfo.split("|");
           if (pointIdx === 0) {
@@ -56,9 +56,12 @@ const listFromTo = getTripsByDateResult => {
             });
           }
         });
+        // console.warn("fromPoints=>", fromPoints);
+        // console.warn("toPoints=>", toPoints);
+
         fromPoints.forEach(fromPoint => {
           toPoints.forEach((toPoint, toIdx) => {
-            if (toIdx >= currentFromIdx) {
+            if (toIdx >= currentFromIdx && fromPoint.name !== "") {
               routes.push({
                 fromId: fromPoint.id,
                 fromName: fromPoint.name,
@@ -115,7 +118,7 @@ const loginReducers = (state = initialState, action) => {
       (state.trip = action.trip), (state.user = action.user);
       state.seat_templates = action.seat_templates;
       state.group_seat_templates = action.group_seat_templates;
-      state.from_to = listFromTo(JSON.parse(action.trip._bodyInit));
+      state.fromArea_toArea = listFromTo(JSON.parse(action.trip._bodyInit));
       return {
         ...state
       };
@@ -135,7 +138,9 @@ const loginReducers = (state = initialState, action) => {
         (state.token = action.data.token.access_token);
       state.seat_templates = action.data.seat_templates;
       state.group_seat_templates = action.data.group_seat_templates;
-      state.from_to = listFromTo(JSON.parse(action.data.trip._bodyInit));
+      state.fromArea_toArea = listFromTo(
+        JSON.parse(action.data.trip._bodyInit)
+      );
       return {
         ...state
       };

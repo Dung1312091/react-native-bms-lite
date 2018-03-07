@@ -9,6 +9,7 @@ import AddTrip from "./scenes/AddTrip";
 import AddNewTrip from "./scenes/AddNewTrip";
 import AddNewTripStepTow from "./scenes/AddNewTripStepTow";
 import FareCreation from "./scenes/FareCreation";
+import Account from "./scenes/Account";
 class RouterComponent extends Component {
   render() {
     return (
@@ -41,6 +42,12 @@ class RouterComponent extends Component {
           <Scene
             key="fareCreation"
             component={FareCreation}
+            hideNavBar="true"
+            // initial
+          />
+          <Scene
+            key="account"
+            component={Account}
             hideNavBar="true"
             // initial
           />

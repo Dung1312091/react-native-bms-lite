@@ -31,7 +31,9 @@ class DropdownTrip extends Component {
     let tomorrowDate = moment(tomorrow).format("YYYY-MM-DD");
     return tomorrowDate;
   };
-  selectRoute = value => {
+  selectRoute = id => {
+    let route = this.state.data.filter(item => item[0] === id);
+    // console.log("route=>", route);
     let user = this.props.loginReducers.user;
     let token = this.props.loginReducers.token;
     let fromDate = moment(this.props.dayReducers, "DD-MM-YYYY").format(
@@ -41,12 +43,12 @@ class DropdownTrip extends Component {
     let params = {
       access_token: token,
       company_id: user.data.CompId,
-      route_id: value[0],
+      route_id: id,
       from_date: fromDate,
       to_date: toDate,
       groups: "selling_configs,fare_configs,statistic"
     };
-    this.props.changeRouteId(value[0], value);
+    this.props.changeRouteId(id, route[0]);
     this.props.getConfigurationOverview(params);
   };
   render() {
@@ -54,7 +56,7 @@ class DropdownTrip extends Component {
     return (
       <MyDropDown
         data={data}
-        onDropdownSelect={this.selectRoute}
+        onDropdownSelect={this.selectRoute.bind(this)}
         defaultValue={{}}
       />
     );

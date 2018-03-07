@@ -134,7 +134,7 @@ class FlastListItem extends Component {
     return (
       <TouchableOpacity
         onPress={() => {
-          console.warn("a");
+          //console.warn("a");
         }}
       >
         <Grid
@@ -247,6 +247,7 @@ class TicketManagement extends Component {
               onDropdownSelect={() => {
                 return null;
               }}
+              defaultValue={{}}
             />
           </Col>
           <Col style={{ margin: "1%", flex: 1 }}>
