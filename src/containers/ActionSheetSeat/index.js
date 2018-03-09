@@ -22,7 +22,6 @@ class ActionSheet extends Component {
     this.showAddModal = this.showAddModal.bind(this);
   }
   onClick = index => {
-    console.warn("---->", this.props);
     const { isTrip, trip, user, route } = this.props;
     switch (index) {
       case 0:
@@ -35,6 +34,13 @@ class ActionSheet extends Component {
             user: user
           });
         }
+        break;
+      case 1:
+        this.actionSheet.hideAddModal();
+        Actions.cancelTrip({
+          trip: trip,
+          route: route
+        });
         break;
       case 5:
         this.actionSheet.hideAddModal();

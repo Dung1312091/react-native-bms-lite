@@ -184,9 +184,18 @@ class FareCreation extends Component {
     );
     // console.log("optionList=>", fromA_toA[0].routes);
   }
+  goMain = () => {
+    Actions.main();
+  };
   componentWillReceiveProps(nextProps) {
     if (nextProps.isLoading) {
-      Alert.alert("Thêm chuyến thành công");
+      // Alert.alert("Thêm chuyến thành công");
+      Alert.alert(
+        "",
+        "Thêm chuyến thành công",
+        [{ text: "OK", onPress: () => this.goMain() }],
+        { cancelable: false }
+      );
     }
   }
   back = () => {

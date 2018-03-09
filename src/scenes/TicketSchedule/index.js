@@ -17,7 +17,7 @@ import {
 import { connect } from "react-redux";
 import DateRangePicker from "../../components/DateRangePicker";
 import SeatOverview from "../../containers/SeatOverview";
-// import Dropdown from "../../components/Dropdown";
+import Loading from "../../components/Loading";
 import DropdownTrip from "../../containers/DropdownTrip";
 import { Actions } from "react-native-router-flux";
 //import MyDropDown from "../../components/myDropDown/index";
@@ -70,11 +70,6 @@ class TicketScheduleScene extends React.Component {
     let trip = data.data.filter(item => {
       return item[1] === 1;
     });
-    console.warn("trip", trip);
-    console.warn("route", route);
-
-    console.warn("user", user);
-
     Actions.addNewTrip({
       trip: trip,
       route: route,
@@ -121,6 +116,9 @@ class TicketScheduleScene extends React.Component {
           </Col>
         </Grid>
         {/* <View style={{ height: 15 }} /> */}
+        {this.props.configurationOverviewReducers.isLoading ? (
+          <Loading color="#ffffff" />
+        ) : null}
         <SeatOverview openModel={this.onpenActionSheet} />
         <ActionSheet
           ref={ref => {
@@ -141,7 +139,8 @@ SeatOverview.propTypes = {
 const mapStateToProps = state => {
   return {
     loginReducers: state.loginReducers,
-    changeRouteReducers: state.changeRouteReducer
+    changeRouteReducers: state.changeRouteReducer,
+    configurationOverviewReducers: state.getConfigurationOverview
   };
 };
 export default connect(mapStateToProps, null)(TicketScheduleScene);

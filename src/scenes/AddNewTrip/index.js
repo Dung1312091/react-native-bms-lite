@@ -148,10 +148,10 @@ class AddNewTrip extends React.Component {
   componentWillMount() {
     console.log("---a", this.props.userInfo);
     let { trip } = this.props;
-    console.warn("trip", trip);
+    // console.warn("trip", trip);
     let listUserRights = this.props.userInfo.split("~");
     let rs = listUserRights.findIndex(cb => cb === RIGHT_PRIVATE_CONFIG);
-    console.warn("rs=>", rs);
+    // console.warn("rs=>", rs);
     if (trip && trip.time) {
       this.state.listTripTime.push({
         id: uuidv4(),
@@ -249,7 +249,7 @@ class AddNewTrip extends React.Component {
       status: 1,
       trip_id: +this.state.trip_id
     };
-    console.warn("--->", other_config);
+    // console.warn("--->", other_config);
     if (this.state.showPrivate) {
       is_priority = 1;
       if (this.state.configPrivate) {
@@ -674,7 +674,7 @@ class AddNewTrip extends React.Component {
     const margin = restHeight / 2;
     // const heightBottom = height - margin - viewHeight;
     let { timeRun, timeStart, timeEnd, driver, frequency } = this.state;
-    console.warn("isTrip-->", this.props.addTrip);
+    // console.warn("isTrip-->", this.props.addTrip);
     return (
       <Container style={{ backgroundColor: "#fff" }}>
         <Header style={styles.headerStyle}>

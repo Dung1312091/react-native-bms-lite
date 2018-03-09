@@ -59,7 +59,7 @@ class AddNewTripStepTow extends Component {
     let seatInfo = value[0][1].split("~");
     let seatDiagram = seatInfo[0].split("|");
     let seatDiagramId = value[0][0];
-    console.warn("value=>", value);
+    // console.warn("value=>", value);
     let coach = seatDiagram[1]; //so tang
     let result = [];
     let floor_1 = [];
@@ -141,7 +141,7 @@ class AddNewTripStepTow extends Component {
     });
   };
   componentWillMount() {
-    console.warn("ahihi");
+    //console.warn("ahihi");
     const seat_templates = this.props.seat_templates.data;
     // console.log(
     //   "this.props.seat_templates.data=>",
@@ -177,7 +177,7 @@ class AddNewTripStepTow extends Component {
         isShowButton: true
       });
     }
-    console.warn(data);
+    //console.warn(data);
   };
   unSelectSeat = data => {
     if (data._isOnline) {
@@ -191,7 +191,7 @@ class AddNewTripStepTow extends Component {
         this.state.listSelectItem.splice(index, 1);
       }
     }
-    console.warn(data);
+    //console.warn(data);
   };
   renderSeatMap = arr => {
     return arr.map((item, index) => {
@@ -423,7 +423,7 @@ const styles = StyleSheet.create({
   }
 });
 const mapStateToProps = state => {
-  console.warn("loginReducers=>", state.loginReducers);
+  //console.warn("loginReducers=>", state.loginReducers);
   return {
     seat_templates: state.loginReducers.seat_templates,
     userInfo: state.loginReducers.user.data.Info

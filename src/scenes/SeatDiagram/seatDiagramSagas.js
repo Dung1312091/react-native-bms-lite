@@ -28,7 +28,7 @@ function* changeSeatDiagramSagas(action) {
       }
     }
   } catch (error) {
-    console.warn(error);
+    //console.warn(error);
   }
 }
 

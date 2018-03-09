@@ -438,9 +438,9 @@ class SeatOverview extends Component {
     } = styles;
     return (
       <View style={containerStyle}>
-        {this.props.configurationOverviewReducers.isLoading ? (
+        {/* {this.props.configurationOverviewReducers.isLoading ? (
           <Loading color="#ffffff" />
-        ) : null}
+        ) : null} */}
         <Grid style={[tableStyle, { backgroundColor: "#ECECEC" }]}>
           {dates ? (
             <Col style={columnHeader}>

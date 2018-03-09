@@ -32,10 +32,15 @@ class Account extends Component {
     Actions.pop();
   };
   handleLogOut = () => {
-    Alert.alert("Đăng xuất", "Bạn có muốn đăng xuất không?", [
-      { text: "Cancel", onPress: () => {} },
-      { text: "OK", onPress: () => this.logOut() }
-    ]);
+    Alert.alert(
+      "Đăng xuất",
+      "Bạn có muốn đăng xuất không?",
+      [
+        { text: "Bỏ qua", onPress: () => {} },
+        { text: "Đồng ý", onPress: () => this.logOut() }
+      ],
+      { cancelable: false }
+    );
   };
   render() {
     return (

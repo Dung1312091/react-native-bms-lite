@@ -58,7 +58,7 @@ class AddTrip extends React.Component {
   }
   componentWillMount() {
     const { time } = this.props.trip;
-    console.warn("this.props.trip=>", this.props.trip);
+    //console.warn("this.props.trip=>", this.props.trip);
 
     this.state.listTripTime.push(time);
     this.setState({

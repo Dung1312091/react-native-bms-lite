@@ -6,12 +6,12 @@ import moment from "moment";
 class DatePicker extends Component {
   constructor(props) {
     super(props);
-    console.warn("this.props.defaultValue", this.props.defaultValue);
+    // console.warn("this.props.defaultValue", this.props.defaultValue);
     let date =
       this.props.defaultValue !== undefined
         ? moment(this.props.defaultValue, "YYYY-MM-DD").format("DD-MM-YYYY")
         : moment().format("DD-MM-YYYY");
-    console.warn("date=>", date);
+
     this.state = {
       isDateTimePickerVisible: false,
       date: date

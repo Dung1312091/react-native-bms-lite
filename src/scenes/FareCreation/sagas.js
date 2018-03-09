@@ -64,7 +64,7 @@ function* addTrip(action) {
       console.log("action-==>", action);
     }
   } catch (error) {
-    console.warn(error);
+    //console.warn(error);
   }
 }
 
